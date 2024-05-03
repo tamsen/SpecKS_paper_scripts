@@ -13,7 +13,7 @@ class BatchAggregator(unittest.TestCase):
         #batch_names = ["sim37_N0p1","sim37_N1","sim37_N5","sim36_N10",
         #               "sim37_N20","sim37_N100","sim35_log"]
 
-        batch_names = ["sim37_N0p1","sim37_N1","sim37_N5","sim36_N10","sim37_N20","sim35_log"]
+        batch_names = ["sim37_N0p1","sim37_N1","sim37_N5","sim36_N10","sim37_N20"]#,"sim35_log"]
 
         reprocess=False
         out_folder = "/home/tamsen/Data/Specks_outout_from_mesx"

@@ -15,8 +15,7 @@ class AlloAutoPredictor(unittest.TestCase):
     def test_spec_time_predictor(self):
 
         out_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
-        #file1="mode_vs_spec_time.csv"
-        file1="mode_vs_spec_time _without_N100.csv"
+        file1="mode_vs_spec_time.csv"
         full_path=os.path.join(out_folder,file1)
         spec_xs,mode_ys, sims = read_xs_ys_csv(full_path)
 
@@ -45,7 +44,7 @@ class AlloAutoPredictor(unittest.TestCase):
     def test_wgd_time_predictor(self):
 
         out_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
-        file1="genes_remaining_vs_wgd_time_noN100.csv"
+        file1="genes_remaining_vs_wgd_time.csv"
         full_path=os.path.join(out_folder,file1)
 
         wgd_xs,genes_remaining,sims = read_xs_ys_csv(full_path)
@@ -75,7 +74,7 @@ class AlloAutoPredictor(unittest.TestCase):
     def test_auto_vs_allo_predictor(self):
 
         out_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
-        file1="genes_remaining_vs_wgd_time_noN100.csv"
+        file1 = "genes_remaining_vs_wgd_time.csv"
         file2="mode_vs_spec_time.csv"
         full_path1 = os.path.join(out_folder, file1)
         full_path2 = os.path.join(out_folder, file2)
