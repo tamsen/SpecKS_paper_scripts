@@ -15,6 +15,11 @@ class Test1KP(unittest.TestCase):
 
     def test_1KP_analysis(self):
 
+        # Note, the "1KP_final_ks_files" folder should have all the .fa files
+        # from https://gitlab.com/barker-lab/1KP/-/tree/master/1KP_ksplots?ref_type=heads
+        # from 1KP_final_ks_files.tar.gz
+        # (the files with the Ks data will have names like "final_ks_values_AALA.fa" etc.
+
         data_directory = "/home/tamsen/Data/1KP_classfier"
         kp_directory = os.path.join(data_directory, "1KP_final_ks_files")
         output_folder = os.path.join(data_directory, "1KP_classifier_out_Apr23b")

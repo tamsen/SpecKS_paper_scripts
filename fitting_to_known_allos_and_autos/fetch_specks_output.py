@@ -2,13 +2,16 @@ import os
 import time
 import unittest
 import process_wrapper
+from results_viewer.download_sim_results import get_subdirectories, get_run_folders_by_polyploid_name
 
-class MyTestDownloader(unittest.TestCase):
+
+class MyTestDownloaderForFits(unittest.TestCase):
+
 
 
     def test_download_mesx_results(self):
 
-        batch_folder = "sim40_10p0"#,sim40_1p0,sim40_5p0,sim40_10p0" #"sim37_N20" #sim37_N0p1,sim37_N5
+        batch_folder = "sim41_coffee"#,sim40_1p0,sim40_5p0,sim40_10p0" #"sim37_N20" #sim37_N0p1,sim37_N5
         me_at_remote_URL = 'tdunn@mesx.sdsu.edu'
         local_output_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
         remote_output_folder = "/usr/scratch2/userdata2/tdunn/SpecKS_Output"
@@ -20,9 +23,11 @@ class MyTestDownloader(unittest.TestCase):
 
         run_folders= get_subdirectories(local_output_folder, me_at_remote_URL,
                                              remote_batch_folder, "sp*")
-        run_folder_by_polyploid_name = self.get_run_folders_by_polyploid_name(run_folders)
+        run_folder_by_polyploid_name = get_run_folders_by_polyploid_name(run_folders)
 
+        print(run_folder_by_polyploid_name)
 
+        return
         polyploid_folders_by_name={}
         for polyploid_name, run_folder in run_folder_by_polyploid_name.items():
             full_path=os.path.join(remote_batch_folder, run_folder,polyploid_name)
@@ -68,38 +73,3 @@ class MyTestDownloader(unittest.TestCase):
         out_string, error_string = process_wrapper.run_and_wait_on_process(cmd2, local_batch_folder)
 
         print(scp_commands)
-
-def get_run_folders_by_polyploid_name(run_folders):
-    directory_groups = run_folders.split("\n\n")
-    #print(run_folders)
-    #print(directory_groups)
-    run_folder_by_polyploid_name = {}
-    for group in directory_groups:
-        paths = group.split("\n")
-        directory_name = paths[0].replace(":", "")
-        poyploid_names = []
-        for path in paths[1:len(paths)]:
-
-            if path == "":
-                continue
-
-            if not "." in path:
-                poyploid_names.append(path)
-
-        for polyploid in poyploid_names:
-            run_folder_by_polyploid_name[polyploid] = directory_name
-    return run_folder_by_polyploid_name
-
-def get_subdirectories(local_output_folder, me_at_remote_URL, remote_output_folder, argument=False):
-    cmd4 = ['ssh', me_at_remote_URL, '. ~/.bash_profile;',
-            'cd ' + remote_output_folder + ';', 'ls']
-    if argument:
-        cmd4.append(argument)
-    print(" ".join(cmd4))
-    #out_string, error_string = process_wrapper.run_and_wait_on_process(cmd4, local_output_folder)
-    out_string, error_string = process_wrapper.run_and_wait_with_retry(cmd4, local_output_folder,
-                                    "Connection reset by peer", 3,5)
-    return out_string
-
-if __name__ == '__main__':
-    unittest.main()

@@ -20,6 +20,7 @@ class MyTestCase(unittest.TestCase):
 
         splat=specks_csv_file.split("_")
         species_run_name=splat[0]+splat[1]
+        species_for_plot_title= 'Coffea arabica'
         specks_full_path=os.path.join(specks_out_folder,specks_csv_file)
         real_full_path=os.path.join(ksrates_out_folder,ksrates_csv_file)
 
@@ -27,8 +28,11 @@ class MyTestCase(unittest.TestCase):
         max_Ks=0.2
         color='blue'
         wgd_ks=0.002
-        make_both_histograms(bin_size, color, hist_comparison_out_folder, wgd_ks, max_Ks, real_full_path,
-                         species_run_name, specks_full_path)
+        density = 1
+
+        make_both_histograms(bin_size, color, hist_comparison_out_folder,
+                             wgd_ks, max_Ks, density, real_full_path,
+                         species_run_name, species_for_plot_title, specks_full_path)
 
     def test_poplar_histogram(self):
         hist_comparison_out_folder = "/home/tamsen/Data/SpecKS_output/hist_comparison"
@@ -40,6 +44,7 @@ class MyTestCase(unittest.TestCase):
 
         splat = specks_csv_file.split("_")
         species_run_name = splat[0] + splat[1]
+        species_for_plot_title= 'Populus trichocarpa'
         specks_full_path = os.path.join(specks_out_folder, specks_csv_file)
         real_full_path = os.path.join(ksrates_out_folder, ksrates_csv_file)
 
@@ -47,9 +52,11 @@ class MyTestCase(unittest.TestCase):
         max_Ks = 0.5
         color = 'blue'
         wgd_ks=0.18
+        density = 1
 
-        make_both_histograms(bin_size, color, hist_comparison_out_folder, wgd_ks, max_Ks, real_full_path,
-                             species_run_name, specks_full_path)
+        make_both_histograms(bin_size, color, hist_comparison_out_folder, wgd_ks,
+                             max_Ks, density, real_full_path,
+                             species_run_name, species_for_plot_title, specks_full_path)
     def test_maize_histogram(self):
 
         hist_comparison_out_folder = "/home/tamsen/Data/SpecKS_output/hist_comparison"
@@ -62,6 +69,7 @@ class MyTestCase(unittest.TestCase):
 
         splat=specks_csv_file.split("_")
         species_run_name=splat[0]+splat[1]
+        species_for_plot_title= 'Zea mays'
         specks_full_path=os.path.join(specks_out_folder,specks_csv_file)
         real_full_path=os.path.join(ksrates_out_folder,ksrates_csv_file)
 
@@ -69,9 +77,11 @@ class MyTestCase(unittest.TestCase):
         max_Ks=0.3
         color='blue'
         wgd_ks=0.125
+        density = 1
 
-        make_both_histograms(bin_size, color, hist_comparison_out_folder, wgd_ks, max_Ks, real_full_path,
-                         species_run_name, specks_full_path)
+        make_both_histograms(bin_size, color, hist_comparison_out_folder, wgd_ks,
+                         max_Ks, density, real_full_path,
+                         species_run_name, species_for_plot_title, specks_full_path)
     def test_olive_histogram(self):
 
         hist_comparison_out_folder = "/home/tamsen/Data/SpecKS_output/hist_comparison"
@@ -127,12 +137,13 @@ class MyTestCase(unittest.TestCase):
         max_Ks=0.3
         WGD_ks=0.001
         color='blue'
+        density = None
 
-        make_both_histograms(bin_size, color, hist_comparison_out_folder, WGD_ks,max_Ks, real_ks_results,
+        make_both_histograms(bin_size, color, hist_comparison_out_folder, WGD_ks,max_Ks, density,real_ks_results,
                                   species_run_name, specks_ks_results)
 
-def make_both_histograms(bin_size, color, hist_comparison_out_folder, WGD_ks, max_Ks, real_full_path,
-                         species_run_name, specks_full_path):
+def make_both_histograms(bin_size, color, hist_comparison_out_folder, WGD_ks, max_Ks, density, real_full_path,
+                         species_run_name, species_for_plot_title, specks_full_path):
 
     specks_ks_results = batch_histogrammer.read_Ks_csv(specks_full_path)
     real_ks_results = parse_external_ksfile(real_full_path)
@@ -141,18 +152,21 @@ def make_both_histograms(bin_size, color, hist_comparison_out_folder, WGD_ks, ma
         os.makedirs(hist_comparison_out_folder)
     out_png1 = os.path.join(hist_comparison_out_folder, "specks_" + species_run_name + "_out.png")
     out_png2 = os.path.join(hist_comparison_out_folder, "specks_" + species_run_name + "_fit.png")
-    make_simple_histogram(specks_ks_results, species_run_name, bin_size, color, WGD_ks, max_Ks, out_png1)
+    specks_hist_data =make_simple_histogram(specks_ks_results, species_run_name, bin_size, color, WGD_ks,
+                          max_Ks, density, out_png1)
     #fit_fxns_to_Ks(specks_ks_results, species_run_name,5000,400,
     #               max_Ks, out_png2)
 
     out_png1 = os.path.join(hist_comparison_out_folder, "real_" + species_run_name + "_out.png")
     out_png2 = os.path.join(hist_comparison_out_folder, "real_" + species_run_name + "_fit.png")
-    make_simple_histogram(real_ks_results, species_run_name, bin_size, color, WGD_ks ,max_Ks, out_png1)
-    #fit_fxns_to_Ks(real_ks_results, species_run_name,1000,40,
-    #               max_Ks, out_png2)
+    real_hist_data = make_simple_histogram(real_ks_results, species_run_name, bin_size, color, WGD_ks,
+                          max_Ks, density, out_png1)
 
+    out_png3 = os.path.join(hist_comparison_out_folder, "overlay_" + species_run_name + "_fit.png")
+    overlay_histogram(species_run_name, species_for_plot_title,
+                      [specks_hist_data,real_hist_data], WGD_ks, out_png3)
 
-def make_simple_histogram(Ks_results, species_name, bin_size, color,WGD_ks, max_Ks, out_png):
+def make_simple_histogram(Ks_results, species_name, bin_size, color,WGD_ks, max_Ks, density, out_png):
 
     fig = plt.figure(figsize=(10, 10), dpi=100)
     x = Ks_results
@@ -160,7 +174,8 @@ def make_simple_histogram(Ks_results, species_name, bin_size, color,WGD_ks, max_
     label="hist for " + os.path.basename(out_png).replace("_out.png","")
     if max_Ks:
         bins = np.arange(bin_size, max_Ks + 0.1, bin_size)
-        n, bins, patches = plt.hist(x, bins=bins, facecolor=color, alpha=0.25, label=label)
+        n, bins, patches = plt.hist(x, bins=bins, facecolor=color, alpha=0.25,
+                                    label=label, density=density)
         plt.xlim([0, max_Ks * (1.1)])
 
 
@@ -176,6 +191,49 @@ def make_simple_histogram(Ks_results, species_name, bin_size, color,WGD_ks, max_
     plt.clf()
     plt.close()
 
+    return [n,bins]
+
+
+def overlay_histogram(species_name, species_for_plot_title, list_of_hist_data, WGD_ks,out_png):
+
+    colors = ['blue','green']
+    labels = ['specks','truth']
+
+    fig = plt.figure()
+    ax1 = plt.subplot2grid((4, 1), (0, 0), rowspan=3)
+    ax2 = plt.subplot2grid((4, 1), (3, 0), rowspan=1)
+
+    for i in range(0,len(list_of_hist_data)):
+        hist_data =list_of_hist_data[i]
+        [n, bins]=hist_data
+        width=(bins[2]-bins[1])/2
+        xs=[b + i*width for b in bins[0:len(bins)-1]]
+        ax1.bar(xs,n,width=width,
+                color=colors[i], alpha=0.5, label=labels[i])
+
+    #ax[0].axvline(x=WGD_ks, color='b', linestyle='-', label="WGD paralog start")
+    diffs = [(list_of_hist_data[0][0][j]-list_of_hist_data[1][0][j]) for j in range(0,len(list_of_hist_data[1][0]))]
+    ax2.bar(xs, diffs , width=width*2,
+            color='red', alpha=0.5)
+
+    print(species_for_plot_title)
+    num_pairs = sum(n)
+    num_after_wgd = sum([n[i] for i in range(0, len(n)) if bins[i] > WGD_ks])
+    ax1.legend()
+    plt.xlabel("Ks")
+    ax2.set(ylabel="Error")
+    ax1.set(ylabel="Density")
+    #ax1.set(title ='Ks histogram for ' +  species_for_plot_title)
+    #ax1.set(title ='$\Gamma + \mathit{\Gamma}$')
+    #\n{1} pairs of genes. ~{2} retained from WGD.".format(
+    #    species_name, num_pairs, num_after_wgd))
+    fig.suptitle(species_for_plot_title, style='italic')
+    plt.tight_layout()
+    plt.savefig(out_png)
+    plt.clf()
+    plt.close()
+
+    return n, bins
 
 def parse_external_ksfile(ks_file):
 
