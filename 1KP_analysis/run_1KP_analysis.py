@@ -114,7 +114,7 @@ def read_list_of_curated_WGD_to_use_for_analysis(saved_curated_wgd_name):
 
 def plot_histogram_of_metric3_over1KP(metrics_for_hist, output_folder):
 
-    fig = plt.figure(figsize=(10, 10), dpi=100)
+    fig = plt.figure(figsize=(4, 5), dpi=100)
     n, bins, patches = plt.hist(metrics_for_hist, bins=100, facecolor='b', alpha=0.25, label='histogram data')
     lmt=get_low_to_medium_threshold()
     mht=get_medium_to_high_threshold()
@@ -190,7 +190,7 @@ def make_violin_plot(out_folder, plot_data, plot_name, plot_to_make):
             data_labels.append(c)
             colors.append(colors_by_category[c])
     ticks = [i + 1 for i in range(0, len(data))]
-    fig, ax = plt.subplots(1, 1, figsize=(8, 10))
+    fig, ax = plt.subplots(1, 1, figsize=(4, 5))
     plots = plt.violinplot(data, ticks, showmeans=True, showextrema=True,
                            )
     for pc, color in zip(plots['bodies'], colors):
