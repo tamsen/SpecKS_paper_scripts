@@ -26,7 +26,7 @@ class Test1KP(unittest.TestCase):
         lookup_file = "1KP-Sample-List.csv"
         sample_lookup = kp_reader.get_sample_code_lookup(lookup_file)
 
-        reanalyze=True
+        reanalyze=False
         use_only_curated_data=True
         bin_size=0.001
         right_most_ssd_peak = 0.08
@@ -118,21 +118,21 @@ def plot_histogram_of_metric3_over1KP(metrics_for_hist, output_folder):
     n, bins, patches = plt.hist(metrics_for_hist, bins=100, facecolor='b', alpha=0.25, label='histogram data')
     lmt=get_low_to_medium_threshold()
     mht=get_medium_to_high_threshold()
-    plt.axvline(x=lmt, color='cyan', linestyle='--', label="lvm disc. criteria"
-                  + " ({0})".format(round(lmt, 2)))
-    plt.axvline(x=mht, color='blue', linestyle='--', label="lvm disc. criteria"
-                  + " ({0})".format(round(mht, 2)))
+    plt.axvline(x=lmt, color='gray', linestyle='--', label="lvm thresh")
+    plt.axvline(x=mht, color='blue', linestyle='--', label="mvh thresh")
 
     for i in range(0,len(patches)):
         bini=bins[i]
         if bini <=lmt:
-            patches[i].set_facecolor('gray')
+            patches[i].set_facecolor('red')
         elif bini <= mht:
-            patches[i].set_facecolor('cyan')
+            patches[i].set_facecolor('gray')
         else:
             patches[i].set_facecolor('blue')
 
-    plt.title("Metric3 data for 1KP data")
+    plt.ylabel("# species")
+    plt.xlabel("high-vs-low Ne discrimination metric value")
+    plt.title("Histogram of classification of species from the 1KP dataset")
     plt.savefig(os.path.join(output_folder, "metric3_hist.png"))
     plt.clf()
     plt.close()
@@ -178,7 +178,7 @@ def analyze_metric_results(input_metrics_file, out_folder):
             return well_behaved_wgd_histograms
 
 def make_violin_plot(out_folder, plot_data, plot_name, plot_to_make):
-    colors_by_category = {"Low": "gray", "Medium": "cyan", "High": "blue"}
+    colors_by_category = {"Low": "red", "Medium": "gray", "High": "blue"}
     categories = colors_by_category.keys()
     data = []
     data_labels = []
@@ -195,28 +195,30 @@ def make_violin_plot(out_folder, plot_data, plot_name, plot_to_make):
                            )
     for pc, color in zip(plots['bodies'], colors):
         pc.set_facecolor(color)
-    ax.axhline(y=get_low_to_medium_threshold(), color='cyan', linestyle='--', label="lvm disc. criteria"
-                                                                                    + " ({0})".format(
-        round(get_low_to_medium_threshold(), 2)))
-    ax.axhline(y=get_medium_to_high_threshold(), color='blue', linestyle='--', label="lvm disc. criteria"
-                                                                                     + " ({0})".format(
-        round(get_medium_to_high_threshold(), 2)))
-    fig.suptitle(plot_to_make[2])
-    ax.set(xlabel=plot_to_make[1])
-    ax.set(ylabel="log(fit cm-mode)")
+    ax.axhline(y=get_low_to_medium_threshold(), color='gray', linestyle='--')
+    #           #label="lvm disc. criteria"
+    #           #                                                                     + " ({0})".format(
+    #    round(get_low_to_medium_threshold(), 2)))
+    ax.axhline(y=get_medium_to_high_threshold(), color='blue', linestyle='--')
+    #fig.suptitle(plot_to_make[2])
+    #ax.set(xlabel=plot_to_make[1])
+    #ax.set(ylabel="log(fit cm-mode)")
+    plt.xlabel("species by category")
+    plt.ylabel("high-vs-low Ne discrimination metric value")
+    plt.title("Violin plot of classification of species from the 1KP dataset ")
     ax.set_xticks(ticks)
     ax.set_xticklabels(data_labels)
-    plt.legend()
+    #plt.legend()
     violin_plot_file_path = os.path.join(out_folder, plot_name)
     plt.savefig(violin_plot_file_path)
     plt.close()
 
 
 def get_low_to_medium_threshold():
-    return -4.53
+    return -4.34
 
 def get_medium_to_high_threshold():
-    return -3.12
+    return -3.36
 
 def get_log_metric3(run_metrics):
 

@@ -124,10 +124,10 @@ def plot_2_thresholds_against_data(colors3, data, linear_regression_threshold1, 
     for i in range(0, len(specs)):
         plt.scatter(specs[i], data[i], marker='o', c=colors3[i], alpha=alpha)
     ax.axhline(y=linear_regression_threshold1, color=linear_regression_threshold_color1, linestyle='--',
-               label="thresh1"
+               label="lvm thresh"
                      + " ({0})".format(round(linear_regression_threshold1, 4)))
     ax.axhline(y=linear_regression_threshold2, color=linear_regression_threshold_color2, linestyle='--',
-               label="thresh2"
+               label="mvh thresh"
                      + " ({0})".format(round(linear_regression_threshold2, 4)))
     ax.set(xlabel=" spec time ")
     ax.set(ylabel=" metric ")
