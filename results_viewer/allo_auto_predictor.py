@@ -163,19 +163,13 @@ class AlloAutoPredictor(unittest.TestCase):
             plot_error_vs_metric(errors_for_test, metric, metric_name,
                                  sims_names_list, test_i, tests, out_folder)
 
-            metric_name = "Ne*Gt"
-            metric_string = [s.split('_')[-1].replace('N','').replace('p','.') for s in sims_names_list]
-            metric = [float(m) for m in metric_string]
-
-            plot_error_vs_metric(errors_for_test, metric, metric_name,
-                                 sims_names_list, test_i, tests, out_folder)
-
         mode_predictions=[100*mode_dict[s]for s in sims_names_list]
         wgd_truths=[allo_vs_auto_truth_by_sim[s][1] for s in sims_names_list]
         tests=["mode vs WGD time"]
         errors=[mode_predictions[j]-wgd_truths[j] for j in range(0,len(mode_predictions))]
         plot_data_and_CI_for_mode_prediction(mode_predictions,wgd_truths, discrim_criteria_midpoint, num_data_points,
                                  out_folder, sims_names_list, 0, tests)
+
         metric = [allo_vs_auto_truth_by_sim[s][2] for s in sims_names_list]
         plot_error_vs_metric(errors, metric, "allopolyploid_index",
                              sims_names_list, 0, tests, out_folder)
@@ -293,7 +287,7 @@ def plot_data_and_CI_for_mode_prediction(ava_predictions, ava_truth, discrim_cri
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
     plt.scatter(ava_truth, ava_predictions, alpha=alphas,
                 c=colors)
-    # ax = sns.regplot(x, y, ci=80)
+
     foo = pd.DataFrame({'truth': ava_truth,
                         'prediction': ava_predictions,
                         'CI': ci_shading})
