@@ -115,7 +115,7 @@ def read_list_of_curated_WGD_to_use_for_analysis(saved_curated_wgd_name):
 def plot_histogram_of_metric3_over1KP(metrics_for_hist, output_folder):
 
     fig = plt.figure(figsize=(4, 5), dpi=100)
-    n, bins, patches = plt.hist(metrics_for_hist, bins=100, facecolor='b', alpha=0.25, label='histogram data')
+    n, bins, patches = plt.hist(metrics_for_hist, bins=100, facecolor='b', alpha=1, label='histogram data')
     lmt=get_low_to_medium_threshold()
     mht=get_medium_to_high_threshold()
     plt.axvline(x=lmt, color='gray', linestyle='--', label="lvm thresh")
@@ -195,6 +195,7 @@ def make_violin_plot(out_folder, plot_data, plot_name, plot_to_make):
                            )
     for pc, color in zip(plots['bodies'], colors):
         pc.set_facecolor(color)
+        pc.set_alpha(1)
     ax.axhline(y=get_low_to_medium_threshold(), color='gray', linestyle='--')
     #           #label="lvm disc. criteria"
     #           #                                                                     + " ({0})".format(

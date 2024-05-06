@@ -4,6 +4,8 @@ import random
 import statistics
 import unittest
 import numpy as np
+import pandas as pd
+import seaborn as sns
 from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
@@ -76,8 +78,10 @@ class AlloAutoPredictor(unittest.TestCase):
         out_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
         file1 = "genes_remaining_vs_wgd_time.csv"
         file2="mode_vs_spec_time.csv"
+        file3="mode_vs_wgd_time.csv"
         full_path1 = os.path.join(out_folder, file1)
         full_path2 = os.path.join(out_folder, file2)
+        #full_path3 = os.path.join(out_folder, file3)
 
         wgd_xs,genes_remaining,wgd_sims = read_xs_ys_csv(full_path1)
         genes_remaining_dict = dict(zip(wgd_sims,genes_remaining))
@@ -92,7 +96,7 @@ class AlloAutoPredictor(unittest.TestCase):
         truth_by_sim_name=get_truth_from_name_list(wgd_sims)
         allo_vs_auto_truth_by_sim={}
         allo_vs_auto_prediction_by_sim={}
-        print("strating truth assemby")
+        print("starting truth assemby")
         sims_names=truth_by_sim_name.keys()
         predicted_indexes_for_true_autos=[]
         predicted_indexes_for_true_allos=[]
@@ -128,36 +132,53 @@ class AlloAutoPredictor(unittest.TestCase):
         discrim_criteria_midpoint= 0.5 *(highest_predicted_index_for_true_autos + lowest_predicted_index_for_true_allos)
         print("midpoint:\n" + str(discrim_criteria_midpoint))
 
-        tests=["spec","wgd","allopolyploid_index"]
+        tests=["SPEC","WGD","allopolyploid_index"]
+
+        # convert the list of key-value pairs to a dictionary
+        errors_by_test = {test: [] for test in tests}
         sims_names_list=list(sims_names)
         num_data_points=len(sims_names)
-        for i in range(0,len(tests)):
-            ava_truth=[allo_vs_auto_truth_by_sim[s][i] for s in sims_names_list]
-            ava_predictions=[allo_vs_auto_prediction_by_sim[s][i] for s in sims_names_list]
-            fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-            plt.scatter(ava_truth,ava_predictions, alpha=0.25,
-                        c='k',label=tests[i] +", truth vs prediction\nn={0}".format(num_data_points))
-            if i == 2:
-                ax.set(xlabel="<--auto    truth (MY)   allo-->")
-                ax.set(ylabel="<--auto  prediction (MY) allo-->")
-                ax.set(title="Predictions of polyploid index (SPEC - WGD time, in MY)")
-
-                ax.axhline(y=discrim_criteria_midpoint, color='r', linestyle='--', label="discimination criteria"
-                       + " (y={0})".format(round(discrim_criteria_midpoint,2)))
-            else:
-                ax.set(xlabel="truth")
-                ax.set(ylabel="prediction")
-            plt.legend()
-            plot_file = os.path.join(out_folder,tests[i] +"_truth_vs_predictions.png")
-            plt.savefig(plot_file)
-            plt.close()
-
+        for test_i in range(0,len(tests)):
+            ava_truth=[allo_vs_auto_truth_by_sim[s][test_i] for s in sims_names_list]
+            ava_predictions=[allo_vs_auto_prediction_by_sim[s][test_i] for s in sims_names_list]
+            errors_for_test = [abs(ava_predictions[j]-ava_truth[j]) for j in range(0,len(ava_truth))]
+            errors_by_test[tests[test_i]]=errors_for_test
             plot_data = [sims_names_list,ava_truth,ava_predictions]
+
+            plot_file = plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_data_points,
+                                              out_folder, sims_names_list, test_i, tests)
+
             data_file = plot_file.replace("png", "csv")
             save_metrics_to_csv(plot_data,data_file)
 
-    #https://stackoverflow.com/questions/25009284/how-to-plot-roc-curve-in-python
+        for test_i in range(0,len(tests)):
+            ava_truth=[allo_vs_auto_truth_by_sim[s][test_i] for s in sims_names_list]
+            ava_predictions=[allo_vs_auto_prediction_by_sim[s][test_i] for s in sims_names_list]
+            errors_for_test = errors_by_test[tests[test_i]]
+            plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_data_points, out_folder,
+                             sims_names_list, test_i, tests)
 
+            metric_name = "allopolyploid_index"
+            metric = [allo_vs_auto_truth_by_sim[s][2] for s in sims_names_list]
+            plot_error_vs_metric(errors_for_test, metric, metric_name,
+                                 sims_names_list, test_i, tests, out_folder)
+
+            metric_name = "Ne*Gt"
+            metric_string = [s.split('_')[-1].replace('N','').replace('p','.') for s in sims_names_list]
+            metric = [float(m) for m in metric_string]
+
+            plot_error_vs_metric(errors_for_test, metric, metric_name,
+                                 sims_names_list, test_i, tests, out_folder)
+
+        mode_predictions=[100*mode_dict[s]for s in sims_names_list]
+        wgd_truths=[allo_vs_auto_truth_by_sim[s][1] for s in sims_names_list]
+        tests=["mode vs WGD time"]
+        errors=[mode_predictions[j]-wgd_truths[j] for j in range(0,len(mode_predictions))]
+        plot_data_and_CI_for_mode_prediction(mode_predictions,wgd_truths, discrim_criteria_midpoint, num_data_points,
+                                 out_folder, sims_names_list, 0, tests)
+        metric = [allo_vs_auto_truth_by_sim[s][2] for s in sims_names_list]
+        plot_error_vs_metric(errors, metric, "allopolyploid_index",
+                             sims_names_list, 0, tests, out_folder)
 
     def test_highN_vs_lowN_predictor(self):
 
@@ -238,6 +259,82 @@ class AlloAutoPredictor(unittest.TestCase):
         #data_file = os.path.join(out_folder,"highN_vs_lowN_truth_and_predictions.csv")
         #save_metrics_to_csv(plot_data, data_file)
 
+
+def plot_error_vs_metric(error, metric, metric_name,
+                     sims_names_list, test_i, tests, out_folder):
+    colors = ["red" if "Auto" in s else "blue" for s in sims_names_list]
+
+    alphas = [1 if "Auto" in s else 0.25 for s in sims_names_list]
+    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    plt.scatter( metric,error, alpha=alphas,
+                c=colors)
+
+    if test_i == 2:
+        ax.set(xlabel="<--auto    truth (MY)   allo-->")
+        ax.set(ylabel="<--auto  prediction (MY) allo-->")
+        ax.set(title="Predictions of polyploid index (SPEC - WGD time, in MY)")
+
+    else:
+        ax.set(xlabel=metric_name)
+        ax.set(ylabel="prediction error")
+    ax.set(ylim=[-10,65])
+    #plt.legend()
+    plot_file = os.path.join(out_folder, tests[test_i] + "_error_vs_" + metric_name +".png")
+    plt.savefig(plot_file)
+    plt.close()
+    return plot_file
+
+def plot_data_and_CI_for_mode_prediction(ava_predictions, ava_truth, discrim_criteria_midpoint, num_data_points, out_folder,
+                     sims_names_list, test_i, tests):
+
+    colors = ["red" if "Auto" in s else "blue" for s in sims_names_list]
+    ci_shading = ["auto CI at 95%" if "Auto" in s else "allo CI at 95%"  for s in sims_names_list]
+    alphas = [1 if "Auto" in s else 0.25 for s in sims_names_list]
+    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    plt.scatter(ava_truth, ava_predictions, alpha=alphas,
+                c=colors)
+    # ax = sns.regplot(x, y, ci=80)
+    foo = pd.DataFrame({'truth': ava_truth,
+                        'prediction': ava_predictions,
+                        'CI': ci_shading})
+    sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=["darkblue",'darkred'], )
+    ax.set(xlabel="truth (MY)")
+    ax.set(ylabel="prediction (MY)")
+    plt.legend()
+    plot_file = os.path.join(out_folder, tests[test_i] + "_truth_vs_predictions.png")
+    plt.savefig(plot_file)
+    plt.close()
+    return plot_file
+
+def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_data_points, out_folder,
+                     sims_names_list, test_i, tests):
+    colors = ["red" if "Auto" in s else "blue" for s in sims_names_list]
+    ci_shading = ["CI at 95%" for s in sims_names_list]
+    alphas = [1 if "Auto" in s else 0.25 for s in sims_names_list]
+    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    plt.scatter(ava_truth, ava_predictions, alpha=alphas,
+                c=colors, label=tests[test_i] + ", truth vs prediction\nn={0}".format(num_data_points))
+    # ax = sns.regplot(x, y, ci=80)
+    foo = pd.DataFrame({'truth': ava_truth, 'prediction': ava_predictions, 'CI': ci_shading})
+    sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=['k'], )
+    if test_i == 2:
+        ax.set(xlabel="<--auto    truth (MY)   allo-->")
+        ax.set(ylabel="<--auto  prediction (MY) allo-->")
+        ax.set(title="Predictions of polyploid index (SPEC - WGD time, in MY)")
+
+        ax.axhline(y=discrim_criteria_midpoint, color='r', linestyle='--', label="discimination criteria"
+                                                                                 + " (y={0})".format(
+            round(discrim_criteria_midpoint, 2)))
+    else:
+        ax.set(xlabel="truth (MY)")
+        ax.set(ylabel="prediction (MY)")
+    plt.legend()
+    plot_file = os.path.join(out_folder, tests[test_i] + "_truth_vs_predictions.png")
+    plt.savefig(plot_file)
+    plt.close()
+    return plot_file
+
+    #https://stackoverflow.com/questions/25009284/how-to-plot-roc-curve-in-python
 def plot_confusion(accuracy_by_sim, colors_by_category, high_n_mean, low_n_mean, low_vs_medium_discrimination,
                    med_n_mean, medium_vs_high_discrimination, out_folder):
     means_by_category = {"Low": low_n_mean, "Medium": med_n_mean, "High": high_n_mean}

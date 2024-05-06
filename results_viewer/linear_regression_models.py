@@ -58,7 +58,7 @@ class TestLinearRegression(unittest.TestCase):
         # Note, the input file is created by "metric3.csv"
         # created by "test_parse_agg_results" in the batch_aggregator.py
 
-        cutoff = 60 #MY
+        cutoff = 60 #MY (change to 60 or 100 as desired)
         sims,specs,true_category,data=get_highN_vs_lowN_truth(cutoff)
 
         target1 = [0 if m == "Low" else 1 for m in true_category]
@@ -121,6 +121,7 @@ def plot_2_thresholds_against_data(colors3, data, linear_regression_threshold1, 
                                    out_folder, specs, threshold_plot_title3):
     fig, ax = plt.subplots(1, 1, figsize=(4, 4))
     alpha = 0.2
+    n=len(specs)
     for i in range(0, len(specs)):
         plt.scatter(specs[i], data[i], marker='o', c=colors3[i], alpha=alpha)
     ax.axhline(y=linear_regression_threshold1, color=linear_regression_threshold_color1, linestyle='--',
@@ -133,7 +134,7 @@ def plot_2_thresholds_against_data(colors3, data, linear_regression_threshold1, 
     ax.set(ylabel=" metric ")
     plt.legend(loc=4)
     plt.tight_layout(pad=3)
-    ax.set(title=threshold_plot_title3)
+    ax.set(title=threshold_plot_title3 + "\nn={}".format(n))
     plot_file = os.path.join(out_folder, threshold_plot_title3 + ".png")
     plt.savefig(plot_file)
     plt.close()
@@ -160,7 +161,8 @@ def make_custom_ROC_plot(X_test, clf, custom_prob_thresholds,
     title = file_basename.replace("basic", "custom")
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
 
-    plt.plot(fpr_t, tpr_t, label="auc={0},accuracy={1}".format(auc, accuracy_string), marker='x')
+    plt.plot(fpr_t, tpr_t, label="auc={0},accuracy={1}".format(auc, accuracy_string),
+             color='k', marker='x')
     ax.set(xlabel="false positive rate")
     ax.set(ylabel="true positive rate")
     plt.legend(loc=4)
@@ -176,10 +178,12 @@ def make_basic_ROC_plot(file_basename, clf, out_folder,
     y_pred_proba = clf.predict_proba(X_test)[::, 1]
     fpr, tpr, thresholds = metrics.roc_curve(y_test, y_pred_proba, drop_intermediate=False)
     auc = metrics.roc_auc_score(y_test, y_pred_proba)
+    auc_string=str(round(auc, 4))
     print("thresholds:\t" + str(thresholds))
     title = file_basename.replace(".csv", " ROC plot")
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    plt.plot(fpr, tpr, label="auc={0},accuracy={1}".format(auc,accuracy_string), marker='o')
+    plt.plot(fpr, tpr, label="auc={0},accuracy={1}".format(auc_string,accuracy_string),
+             color='k', marker='o')
     ax.set(xlabel="false positive rate")
     ax.set(ylabel="true positive rate")
     plt.legend(loc=4)
@@ -285,7 +289,10 @@ def get_highN_vs_lowN_truth(cutoff):
         if spc_time >= cutoff:
             continue
         if metric[i] <= 0:
-            continue
+            #either its machine error, or a really bad fit.
+            #either way, we shouldnt throw out the data point..
+            metric[i]=abs(metric[i])
+
         true_category= categorize_sim(low_N_sims, med_N_sims, high_N_sims, sim)
         sims.append(sim)
         specs.append(spc_time)
