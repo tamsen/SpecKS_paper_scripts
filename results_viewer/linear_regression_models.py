@@ -58,7 +58,7 @@ class TestLinearRegression(unittest.TestCase):
         # Note, the input file is created by "metric3.csv"
         # created by "test_parse_agg_results" in the batch_aggregator.py
 
-        cutoff = 60 #MY (change to 60 or 100 as desired)
+        cutoff = 100 #MY (change to 60 or 100 as desired)
         sims,specs,true_category,data=get_highN_vs_lowN_truth(cutoff)
 
         target1 = [0 if m == "Low" else 1 for m in true_category]
@@ -103,7 +103,7 @@ class TestLinearRegression(unittest.TestCase):
         return
 
 
-def get_accurcay_by_sim(clf1, clf2, data, sims, true_category):
+def get_accuracy_by_sim(clf1, clf2, data, sims, true_category):
     accuracy_by_sim = {}
     for i in range(0, len(sims)):
         sim = sims[i]
@@ -130,7 +130,7 @@ def plot_2_thresholds_against_data(colors3, data, linear_regression_threshold1, 
     ax.axhline(y=linear_regression_threshold2, color=linear_regression_threshold_color2, linestyle='--',
                label="mvh thresh"
                      + " ({0})".format(round(linear_regression_threshold2, 4)))
-    ax.set(xlabel=" spec time ")
+    ax.set(xlabel=" SPC time ")
     ax.set(ylabel=" metric ")
     plt.legend(loc=4)
     plt.tight_layout(pad=3)

@@ -33,7 +33,7 @@ class AlloAutoPredictor(unittest.TestCase):
 
         linear_fit_popt=goodness_of_fit.popt
         ax.set(xlabel="mode (Ks space)")
-        ax.set(ylabel="spec time as a fxn of mode (MYA)")
+        ax.set(ylabel="input SPC (MYA)")
         #rms2 = mean_squared_error(xs,fit_spec_times, squared=False)
         parameter_string=[str(round(p,2)) for p in linear_fit_popt]
         r = scipy.stats.pearsonr(xs,fit_spec_times)
@@ -64,7 +64,7 @@ class AlloAutoPredictor(unittest.TestCase):
         popt, pcov = curve_fit(curve_fitting.logfit, genes_remaining, wgd_xs)
 
         fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-        plt.scatter(genes_remaining, wgd_xs, c='k',label="empirical data")
+        plt.scatter(genes_remaining, wgd_xs, c='k',label="empirical data",alpha=0.25)
         genes_remaining.sort()
         parameter_string=[str(round(p,2)) for p in popt]
         fit_wgd_times = [curve_fitting.logfit(x, *popt) for x in genes_remaining]
@@ -78,7 +78,7 @@ class AlloAutoPredictor(unittest.TestCase):
         #plt.scatter(example_genes_remaining,predicted_wgd_times, c='r',label="model output (est. wgd time)")
 
         ax.set(xlabel="# genes remaining")
-        ax.set(ylabel="WGD time")
+        ax.set(ylabel="input WGD (MYA)")
         plt.legend()
         plot_file=full_path.replace(".csv",".new.png").replace("shed","remaining")
 
@@ -96,7 +96,7 @@ class AlloAutoPredictor(unittest.TestCase):
         popt, pcov = curve_fit(curve_fitting.linear,log_genes_remaining, wgd_xs)
 
         fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-        plt.scatter(log_genes_remaining, wgd_xs, c='k', label="empirical data")
+        plt.scatter(log_genes_remaining, wgd_xs, c='k', label="empirical data",alpha=0.25)
         genes_remaining.sort()
         parameter_string = [str(round(p, 2)) for p in popt]
         fit_wgd_times = [curve_fitting.linear(x, *popt) for x in log_genes_remaining]
@@ -112,7 +112,7 @@ class AlloAutoPredictor(unittest.TestCase):
         # plt.scatter(example_genes_remaining,predicted_wgd_times, c='r',label="model output (est. wgd time)")
 
         ax.set(xlabel="ln( # genes remaining)")
-        ax.set(ylabel="WGD time")
+        ax.set(ylabel="input WGD (MYA)")
         plt.legend()
         plot_file = full_path.replace(".csv", ".new.log.png").replace("shed", "remaining")
 
@@ -348,15 +348,16 @@ def plot_data_and_CI_for_mode_prediction(ava_predictions, ava_truth, discrim_cri
 
 def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_data_points, out_folder,
                      sims_names_list, test_i, tests):
-    colors = ["red" if "Auto" in s else "blue" for s in sims_names_list]
+    #colors = ["red" if "Auto" in s else "blue" for s in sims_names_list]
+    colors = ["k" if "Auto" in s else "k" for s in sims_names_list]
     ci_shading = ["CI at 95%" for s in sims_names_list]
     alphas = [1 if "Auto" in s else 0.25 for s in sims_names_list]
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
     plt.scatter(ava_truth, ava_predictions, alpha=alphas,
                 c=colors, label=tests[test_i] + ", truth vs prediction\nn={0}".format(num_data_points))
-    # ax = sns.regplot(x, y, ci=80)
+
     foo = pd.DataFrame({'truth': ava_truth, 'prediction': ava_predictions, 'CI': ci_shading})
-    sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=['k'], )
+    sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=['k'],errorbar=('ci', 95) )
     if test_i == 2:
         ax.set(xlabel="<--auto    truth (MY)   allo-->")
         ax.set(ylabel="<--auto  prediction (MY) allo-->")

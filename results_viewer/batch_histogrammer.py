@@ -8,7 +8,7 @@ class BatchHistogrammer(unittest.TestCase):
 
     def test_make_histograms_for_batch(self):
 
-        batch_name="sim40_5p0" ##"sim37_N20" #sim37_N0p1,sim37_N5,sim40_1p0,sim40_5p0,sim40_10p0"
+        batch_name="sim37_N5" ##"sim37_N20" #sim37_N0p1,sim37_N5,sim40_1p0,sim40_5p0,sim40_10p0"
         plot_title=("Simulation with custom GBD model, \n" +\
                     "with Ne-driven allopolyploid ortholog divergence ({0})".format(batch_name))
 
@@ -27,7 +27,7 @@ class BatchHistogrammer(unittest.TestCase):
 
         print("Making plots..")
         bin_size = 0.001
-        max_Ks = 0.1
+        max_Ks = 1.0
         max_Y = False
         for spec in ['polyploid']:#species:
             print(spec)
@@ -152,8 +152,10 @@ def get_histograms_for_runs_in_batch(out_folder, sample_name, csvfiles_by_polypl
 
     fig, ax = plt.subplots(num_spec_times, num_wgd_times,figsize=(10, 10))
     fig.suptitle(sample_name + " for " + replicate +", "+ alg + " algorithm")
-    ax[0, 0].set_title("Allopolyploid\n",fontsize=20)
-    ax[0, num_autos].set_title("Autopolyploid\n",fontsize=20)
+    ax[0, 0].set_title("Allopolyploid",fontsize=15)
+    #ax[0, num_autos].set_title("Autopolyploid",fontsize=15)
+    y_max_by_SPC = {80: 15, 70: 25, 60: 30, 50: 40, 40: 40, 30: 50, 20: 75, 10: 100}
+    #x_max_by_SPC = {80: 1.3, 70: 1.2, 60: 1.1, 50: 1, 40: 0.8, 30: .6, 20: .4, 10: 0.2}
 
     for sim_idx in range(0, num_spec_times):
 
@@ -165,31 +167,52 @@ def get_histograms_for_runs_in_batch(out_folder, sample_name, csvfiles_by_polypl
         for i in range(0, num_omitted_sims):
             results_for_this_sim_index = [False] + results_for_this_sim_index
 
+
         for result_idx in range(0,num_wgd_times):
 
             allo_result_name=results_for_this_sim_index[result_idx]
+            ax[sim_idx, result_idx].tick_params(axis='x', labelsize=5)
+            ax[sim_idx, result_idx].tick_params(axis='y', labelsize=5)
+
             if not allo_result_name:
+                ax[sim_idx, result_idx].text(0.3,0.3,"No plot.\nWGD<0MYA")
                 continue
+
             this_ax = ax[sim_idx, result_idx]
             csvs_for_allo_result= csvfiles_by_polyploid_by_rep_by_algorthim[allo_result_name]
             ks_for_allo_result= csvs_for_allo_result[spec][replicate][alg]
             params=params_by_polyploid[allo_result_name]
+            max_Ks = params.SPC_time_MYA*config.SpecKS_config.Ks_per_Myr*1.3#x_max_by_SPC[params.SPC_time_MYA]
+            maxY = y_max_by_SPC[params.SPC_time_MYA]
+            polyploid_index = params.SPC_time_MYA - params.WGD_time_MYA
+            if polyploid_index ==0:
+                plot_color="red"
+                ax[0, result_idx].set_title("Autopolyploid\nSPC=WGD", fontsize=10)
+            else:
+                plot_color="blue"
+                ax[0, result_idx].set_title("Allopolyploid\nSPC-WGD="+str(polyploid_index), fontsize=10)
             hist_data=make_histogram_subplot(this_ax, spec, ks_for_allo_result,
                                         bin_size, params,
-                                        max_Ks_for_x_axis, max_Y_for_y_axis,"blue")
+                                        max_Ks, maxY,plot_color)
 
+            #ax[sim_idx, result_idx].text(params.SPC_time_MYA* config.SpecKS_config.Ks_per_Myr * 0.5,
+            #                             maxY*0.8, "SPC="+str(params.SPC_time_MYA))
+            ax[sim_idx, result_idx].text(0,maxY*0.8, " SPC="+str(params.SPC_time_MYA))
+            ax[sim_idx, result_idx].text(0,maxY*0.6, " WGD="+str(params.WGD_time_MYA))
             out_file_name = os.path.join(out_folder, allo_result_name + ".hist.csv")
             save_hist_to_csv(hist_data, out_file_name)
 
 
     for i in range(0,num_wgd_times):
         last_row=num_spec_times-1
-        ax[last_row, i].set(xlabel="(wgd offset: " + str(wgd_offsets[i]) + "MYA\n<-- Ks -->")
+        ax[last_row, i].set(xlabel="ΔWGD: " + str(wgd_offsets[i]) + "MYA")
 
     for i in range(0,num_spec_times):
         first_col=0
-        ax[i, first_col].set(ylabel="<- density ->\nspec: "+ str(spec_times[i]) + "MYA")
+        ax[i, first_col].set(ylabel="SPC: \n"+ str(spec_times[i]) + "MYA")
 
+    #plt.subplots(layout="constrained")
+    plt.rcParams['figure.constrained_layout.use'] = True
     out_file_name=os.path.join(out_folder, "histogram" + "_plot_" + spec +
                                "_" + replicate + "_" + str(max_Ks_for_x_axis) + ".png")
     plt.savefig(out_file_name)
@@ -200,23 +223,25 @@ def get_histograms_for_runs_in_batch(out_folder, sample_name, csvfiles_by_polypl
 def make_histogram_subplot(this_ax, spec, Ks_results, bin_size, params,
                            max_Ks, maxY, plot_color):
 
-    WGD_as_Ks = params.WGD_time_MYA * 0.01 #/ 1.04 ..the peak max is about 96% off from where it should be
-    SPEC_as_Ks = params.SPC_time_MYA * 0.01 #/ 1.04
+    WGD_as_Ks = params.WGD_time_MYA * config.SpecKS_config.Ks_per_Myr #/ 1.04 ..the peak max is about 96% off from where it should be
+    SPEC_as_Ks = params.SPC_time_MYA * config.SpecKS_config.Ks_per_Myr #/ 1.04
     default_xaxis_limit =SPEC_as_Ks + 0.2
     x = Ks_results
     num_gene_pairs_str=str(len(Ks_results))
+    polyploid_index = params.SPC_time_MYA - params.WGD_time_MYA
+
 
     bins = np.arange(0, max_Ks + 0.1, bin_size)
-    n, bins, patches = this_ax.hist(x, bins=bins, facecolor=plot_color, alpha=0.25,
-            label='ks hist ({0} pairs)'.format(num_gene_pairs_str))
+    n, bins, patches = this_ax.hist(x, bins=bins, facecolor=plot_color, alpha=1)
+    #        label='ks hist ({0} pairs)'.format(num_gene_pairs_str))
 
     hist_result=[n, bins]
     hist_maximum=max(n)
     ymax_suggestion=hist_maximum*1.6
 
 
-    this_ax.axvline(x=WGD_as_Ks, color='b', linestyle='-', label="WGD time, " + str(params.WGD_time_MYA) + " MYA")
-    this_ax.axvline(x=SPEC_as_Ks, color='r', linestyle='--', label="SPEC time, " + str(params.SPC_time_MYA) + " MYA")
+    this_ax.axvline(x=WGD_as_Ks, color='gray', linestyle='-', label="WGD:" + str(params.WGD_time_MYA))
+    this_ax.axvline(x=SPEC_as_Ks, color='gray', linestyle='--', label="SPC:" + str(params.SPC_time_MYA))
 
 
     if maxY:
