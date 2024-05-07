@@ -5,7 +5,9 @@ import statistics
 import unittest
 import numpy as np
 import pandas as pd
+import scipy
 import seaborn as sns
+from sklearn.metrics import mean_squared_error
 from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
@@ -22,7 +24,9 @@ class AlloAutoPredictor(unittest.TestCase):
         spec_xs,mode_ys, sims = read_xs_ys_csv(full_path)
 
         fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-        plt.scatter(mode_ys, spec_xs, c='b',label="empirical data")
+        colors=['b' if "Allo" in s else 'r' for s in sims]
+        colors=['k' for s in sims]
+        plt.scatter(mode_ys, spec_xs, c=colors,label="empirical data",alpha=0.25)
 
         fit_spec_times, xs, goodness_of_fit=curve_fitting.fit_curve_to_xs_and_ys(
             mode_ys, spec_xs, curve_fitting.linear)
@@ -30,13 +34,20 @@ class AlloAutoPredictor(unittest.TestCase):
         linear_fit_popt=goodness_of_fit.popt
         ax.set(xlabel="mode (Ks space)")
         ax.set(ylabel="spec time as a fxn of mode (MYA)")
-        plt.plot(xs,fit_spec_times, c='k',label="line fit (model))\n"
-                                                              +str(linear_fit_popt))
-        example_modes=np.arange(0.2, 1.0, 0.2)
-        predicted_spec_times= [curve_fitting.linear(x, *linear_fit_popt) for x in example_modes]
-        plt.bar(example_modes,predicted_spec_times, width=0.002, color='pink',label="model input (mode)")
-        plt.scatter(example_modes,predicted_spec_times, c='r',label="model output (est. spec time)")
-        print("linear_fit_popt:\t" + linear_fit_popt)
+        #rms2 = mean_squared_error(xs,fit_spec_times, squared=False)
+        parameter_string=[str(round(p,2)) for p in linear_fit_popt]
+        r = scipy.stats.pearsonr(xs,fit_spec_times)
+        print(r)
+        plt.plot(xs,fit_spec_times, c='k',label="line fit (model)"
+                                                              +"\nparameters: "+str(parameter_string)
+                                                              + "\nresidual: " + str(round(r[0],2)))
+
+
+        #example_modes=np.arange(0.2, 1.0, 0.2)
+        #predicted_spec_times= [curve_fitting.linear(x, *linear_fit_popt) for x in example_modes]
+        #plt.bar(example_modes,predicted_spec_times, width=0.002, color='pink',label="model input (mode)")
+        #plt.scatter(example_modes,predicted_spec_times, c='r',label="model output (est. spec time)")
+        #print("linear_fit_popt:\t" + str(linear_fit_popt))
 
         plot_file=full_path.replace(".csv",".new.png")
         plt.legend()
@@ -53,22 +64,57 @@ class AlloAutoPredictor(unittest.TestCase):
         popt, pcov = curve_fit(curve_fitting.logfit, genes_remaining, wgd_xs)
 
         fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-        plt.scatter(genes_remaining, wgd_xs, c='b',label="empirical data")
+        plt.scatter(genes_remaining, wgd_xs, c='k',label="empirical data")
         genes_remaining.sort()
+        parameter_string=[str(round(p,2)) for p in popt]
         fit_wgd_times = [curve_fitting.logfit(x, *popt) for x in genes_remaining]
-        plt.plot(genes_remaining, fit_wgd_times, c='c', label="log fit (model)\n"
-                                                              +str(popt))
+        plt.plot(genes_remaining, fit_wgd_times, c='k', label="log fit (model)\n"
+                                                              +"parameters: " +str(parameter_string))
         print("logfit_fit_popt:\t" + str(popt))
 
-        example_genes_remaining=np.arange(500, 3000, 500)
-        predicted_wgd_times= [curve_fitting.logfit(x, *popt) for x in example_genes_remaining]
-        plt.bar(example_genes_remaining,predicted_wgd_times, width=10, color='pink',label="model input (# genes)")
-        plt.scatter(example_genes_remaining,predicted_wgd_times, c='r',label="model output (est. wgd time)")
+        #example_genes_remaining=np.arange(500, 3000, 500)
+        #predicted_wgd_times= [curve_fitting.logfit(x, *popt) for x in example_genes_remaining]
+        #plt.bar(example_genes_remaining,predicted_wgd_times, width=10, color='pink',label="model input (# genes)")
+        #plt.scatter(example_genes_remaining,predicted_wgd_times, c='r',label="model output (est. wgd time)")
 
         ax.set(xlabel="# genes remaining")
         ax.set(ylabel="WGD time")
         plt.legend()
         plot_file=full_path.replace(".csv",".new.png").replace("shed","remaining")
+
+        plt.savefig(plot_file)
+        plt.close()
+
+    def test_log_wgd_time_predictor(self):
+
+        out_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
+        file1 = "genes_remaining_vs_wgd_time.csv"
+        full_path = os.path.join(out_folder, file1)
+
+        wgd_xs, genes_remaining, sims = read_xs_ys_csv(full_path)
+        log_genes_remaining=[math.log(g) for g in genes_remaining]
+        popt, pcov = curve_fit(curve_fitting.linear,log_genes_remaining, wgd_xs)
+
+        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+        plt.scatter(log_genes_remaining, wgd_xs, c='k', label="empirical data")
+        genes_remaining.sort()
+        parameter_string = [str(round(p, 2)) for p in popt]
+        fit_wgd_times = [curve_fitting.linear(x, *popt) for x in log_genes_remaining]
+        r = scipy.stats.pearsonr(wgd_xs,fit_wgd_times)
+        plt.plot(log_genes_remaining, fit_wgd_times, c='k', label="log fit (model)\n"
+                                                              + "parameters: " + str(parameter_string)
+                                                                  + "\nresidual: " + str(round(r[0], 2)))
+        print("logfit_fit_popt:\t" + str(popt))
+
+        # example_genes_remaining=np.arange(500, 3000, 500)
+        # predicted_wgd_times= [curve_fitting.logfit(x, *popt) for x in example_genes_remaining]
+        # plt.bar(example_genes_remaining,predicted_wgd_times, width=10, color='pink',label="model input (# genes)")
+        # plt.scatter(example_genes_remaining,predicted_wgd_times, c='r',label="model output (est. wgd time)")
+
+        ax.set(xlabel="ln( # genes remaining)")
+        ax.set(ylabel="WGD time")
+        plt.legend()
+        plot_file = full_path.replace(".csv", ".new.log.png").replace("shed", "remaining")
 
         plt.savefig(plot_file)
         plt.close()
