@@ -1,3 +1,4 @@
+import math
 import os
 import unittest
 
@@ -14,8 +15,8 @@ class MyTestCase(unittest.TestCase):
         hist_comparison_out_folder = "/home/tamsen/Data/SpecKS_output/hist_comparison"
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
-        specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim41_coffee"
-        specks_csv_file = "Allo_Coffea1_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
+        specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim41_coffee/Allo_Coffea6"
+        specks_csv_file = "Allo_Coffea6_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
         ksrates_csv_file="coffea.ks.tsv"
 
         splat=specks_csv_file.split("_")
@@ -30,16 +31,16 @@ class MyTestCase(unittest.TestCase):
         wgd_ks=0.002
         density = 1
 
-        make_both_histograms(bin_size, color, hist_comparison_out_folder,
+        make_both_histograms(bin_size, color, specks_out_folder,
                              wgd_ks, max_Ks, density, real_full_path,
                          species_run_name, species_for_plot_title, specks_full_path)
 
     def test_poplar_histogram(self):
-        hist_comparison_out_folder = "/home/tamsen/Data/SpecKS_output/hist_comparison"
+        #hist_comparison_out_folder = "/home/tamsen/Data/SpecKS_output/hist_comparison/"
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
-        specks_out_folder = "/home/tamsen/Data/Specks_outout_from_mesx/sim41_poplar"
-        specks_csv_file = "Allo_Poplar2_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
+        specks_out_folder = "/home/tamsen/Data/Specks_outout_from_mesx/sim41_Poplar/Allo_Poplar5"
+        specks_csv_file = "Allo_Poplar5_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
         ksrates_csv_file = "poplar.ks.tsv"
 
         splat = specks_csv_file.split("_")
@@ -54,7 +55,7 @@ class MyTestCase(unittest.TestCase):
         wgd_ks=0.18
         density = 1
 
-        make_both_histograms(bin_size, color, hist_comparison_out_folder, wgd_ks,
+        make_both_histograms(bin_size, color, specks_out_folder, wgd_ks,
                              max_Ks, density, real_full_path,
                              species_run_name, species_for_plot_title, specks_full_path)
     def test_maize_histogram(self):
@@ -62,9 +63,9 @@ class MyTestCase(unittest.TestCase):
         hist_comparison_out_folder = "/home/tamsen/Data/SpecKS_output/hist_comparison"
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
-        specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim41_maize"
+        specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim41_Maize/Allo5_Maize"
         #specks_csv_file = "Allo2_Maize_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
-        specks_csv_file = "Allo2_Maize_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
+        specks_csv_file = "Allo5_Maize_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
         ksrates_csv_file="mays.ks.tsv"
 
         splat=specks_csv_file.split("_")
@@ -79,7 +80,7 @@ class MyTestCase(unittest.TestCase):
         wgd_ks=0.125
         density = 1
 
-        make_both_histograms(bin_size, color, hist_comparison_out_folder, wgd_ks,
+        make_both_histograms(bin_size, color,  specks_out_folder, wgd_ks,
                          max_Ks, density, real_full_path,
                          species_run_name, species_for_plot_title, specks_full_path)
     def test_olive_histogram(self):
@@ -197,7 +198,7 @@ def make_simple_histogram(Ks_results, species_name, bin_size, color,WGD_ks, max_
 def overlay_histogram(species_name, species_for_plot_title, list_of_hist_data, WGD_ks,out_png):
 
     colors = ['blue','green']
-    labels = ['specks','truth']
+    labels = ['SpecKS','truth']
 
     fig = plt.figure()
     ax1 = plt.subplot2grid((4, 1), (0, 0), rowspan=3)
@@ -209,17 +210,20 @@ def overlay_histogram(species_name, species_for_plot_title, list_of_hist_data, W
         width=(bins[2]-bins[1])/2
         xs=[b + i*width for b in bins[0:len(bins)-1]]
         ax1.bar(xs,n,width=width,
-                color=colors[i], alpha=0.5, label=labels[i])
+                color=colors[i], alpha=1, label=labels[i])
 
     #ax[0].axvline(x=WGD_ks, color='b', linestyle='-', label="WGD paralog start")
     diffs = [(list_of_hist_data[0][0][j]-list_of_hist_data[1][0][j]) for j in range(0,len(list_of_hist_data[1][0]))]
-    ax2.bar(xs, diffs , width=width*2,
-            color='red', alpha=0.5)
+    rmse=math.sinh(sum([d*d for d in diffs])/len(diffs))
+    ax2.bar(xs, diffs , width=width,
+            color='orange', alpha=1, label="error\nrmse={0}".format(round(rmse,3)))
+
 
     print(species_for_plot_title)
     num_pairs = sum(n)
     num_after_wgd = sum([n[i] for i in range(0, len(n)) if bins[i] > WGD_ks])
     ax1.legend()
+    ax2.legend()
     plt.xlabel("Ks")
     ax2.set(ylabel="Error")
     ax1.set(ylabel="Density")
