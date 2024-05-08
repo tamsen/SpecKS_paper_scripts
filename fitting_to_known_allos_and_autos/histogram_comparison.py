@@ -15,8 +15,8 @@ class MyTestCase(unittest.TestCase):
         hist_comparison_out_folder = "/home/tamsen/Data/SpecKS_output/hist_comparison"
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
-        specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim41_coffee/Allo_Coffea6"
-        specks_csv_file = "Allo_Coffea6_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
+        specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim41_coffee/Allo_Coffea7"
+        specks_csv_file = "Allo_Coffea7_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
         ksrates_csv_file="coffea.ks.tsv"
 
         splat=specks_csv_file.split("_")
@@ -39,8 +39,8 @@ class MyTestCase(unittest.TestCase):
         #hist_comparison_out_folder = "/home/tamsen/Data/SpecKS_output/hist_comparison/"
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
-        specks_out_folder = "/home/tamsen/Data/Specks_outout_from_mesx/sim41_Poplar/Allo_Poplar5"
-        specks_csv_file = "Allo_Poplar5_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
+        specks_out_folder = "/home/tamsen/Data/Specks_outout_from_mesx/sim41_Poplar/Allo_Poplar7"
+        specks_csv_file = "Allo_Poplar7_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
         ksrates_csv_file = "poplar.ks.tsv"
 
         splat = specks_csv_file.split("_")
@@ -63,9 +63,8 @@ class MyTestCase(unittest.TestCase):
         hist_comparison_out_folder = "/home/tamsen/Data/SpecKS_output/hist_comparison"
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
-        specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim41_Maize/Allo5_Maize"
-        #specks_csv_file = "Allo2_Maize_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
-        specks_csv_file = "Allo5_Maize_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
+        specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim41_Maize/Allo7_Maize"
+        specks_csv_file = "Allo7_Maize_ML_rep0_LCA_to_Ortholog_Ks_by_GeneTree.csv"
         ksrates_csv_file="mays.ks.tsv"
 
         splat=specks_csv_file.split("_")
