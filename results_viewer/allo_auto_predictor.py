@@ -343,23 +343,40 @@ def plot_data_and_CI_for_mode_prediction(ava_predictions_allo, ava_truth_allo,
                                          ava_predictions_auto, ava_truth_auto,out_folder,
                                         sims_names_list, test_i, tests):
 
-    ci_percent=99.99
+    ci_percent=99.99#60#99.99
     ci_shading_auto = ["CI at {0}% (auto only)".format(ci_percent) for s in sims_names_list if "Auto" in s]
-    #alphas = [0.25 if "Auto" in s else 0.25 for s in sims_names_list]
+    ci_shading_allo = ["CI at {0}% (allo only)".format(ci_percent) for s in sims_names_list if "Allo" in s]
+
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
     plt.scatter(ava_truth_auto, ava_predictions_auto, alpha=1,
                 c=config.auto_color, label="auto")
     plt.scatter(ava_truth_allo, ava_predictions_allo, alpha=0.5,
                 c=config.allo_color, label="allo")
 
-    foo = pd.DataFrame({'truth': ava_predictions_auto,
-                        'prediction': ava_truth_auto,
+    foo_auto = pd.DataFrame({'truth': ava_truth_auto,
+                        'prediction': ava_predictions_auto,
                         'CI': ci_shading_auto})
+
+    foo_allo = pd.DataFrame({'truth': ava_truth_allo,
+                        'prediction': ava_predictions_allo,
+                        'CI': ci_shading_allo})
+
     #sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=['k'],
     #             errorbar=('ci', ci_percent))
-    sns.regplot(data=foo, x='truth', y='prediction', color='k',ci=ci_percent,marker=None,scatter=False,
+    sns.regplot(data=foo_auto, x='truth', y='prediction', color='darkred',ci=ci_percent,marker=None,scatter=False,
                 label="CI at {0}%\n(autos only)".format(ci_percent),
                 line_kws={"linewidth":1})
+    '''
+    sns.regplot(data=foo_allo, x='truth', y='prediction', color='darkblue',ci=ci_percent,
+                marker=None,scatter=False,
+                label="CI at {0}%\n(allos only)".format(ci_percent),
+                line_kws={"linewidth":1})
+
+    sns.regplot(data=foo_allo, x='truth', y='prediction', color='darkblue',ci=60,
+                marker=None,scatter=False,
+                label="CI at {0}%\n(allos only)".format(60),
+                line_kws={"linewidth":1})
+    '''
     ax.set(xlabel="truth (MY)")
     ax.set(ylabel="prediction (MY)")
     plt.legend()

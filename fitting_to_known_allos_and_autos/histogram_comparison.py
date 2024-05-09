@@ -1,12 +1,12 @@
 import math
 import os
 import unittest
-
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from fitting_to_known_allos_and_autos.fit_to_ks_rates_data import parse_ks, fit_fxns_to_Ks
-from results_viewer import batch_analyzer, batch_histogrammer, curve_fitting, batch_aggregator
+from matplotlib.patches import Rectangle
+import config
+from results_viewer import batch_histogrammer
 
 class MyTestCase(unittest.TestCase):
 
@@ -136,7 +136,7 @@ class MyTestCase(unittest.TestCase):
         bin_size=0.002
         max_Ks=0.3
         WGD_ks=0.001
-        color='blue'
+        color=config.allo_color
         density = None
 
         make_both_histograms(bin_size, color, hist_comparison_out_folder, WGD_ks,max_Ks, density,real_ks_results,
@@ -165,6 +165,10 @@ def make_both_histograms(bin_size, color, hist_comparison_out_folder, WGD_ks, ma
     out_png3 = os.path.join(hist_comparison_out_folder, "overlay_" + species_run_name + "_fit.png")
     overlay_histogram(species_run_name, species_for_plot_title,
                       [specks_hist_data,real_hist_data], WGD_ks, out_png3)
+
+    out_png4 = os.path.join(hist_comparison_out_folder, "differences_" + species_run_name + "_fit.png")
+    overlay_differences_in_curves(species_for_plot_title, [specks_hist_data,real_hist_data],
+                                  WGD_ks, out_png4)
 
 def make_simple_histogram(Ks_results, species_name, bin_size, color,WGD_ks, max_Ks, density, out_png):
 
@@ -210,7 +214,6 @@ def overlay_histogram(species_name, species_for_plot_title, list_of_hist_data, W
         xs=[b + i*width for b in bins[0:len(bins)-1]]
         ax1.bar(xs,n,width=width,
                 color=colors[i], alpha=1, label=labels[i])
-
     #ax[0].axvline(x=WGD_ks, color='b', linestyle='-', label="WGD paralog start")
     diffs = [(list_of_hist_data[0][0][j]-list_of_hist_data[1][0][j]) for j in range(0,len(list_of_hist_data[1][0]))]
     rmse=math.sinh(sum([d*d for d in diffs])/len(diffs))
@@ -226,11 +229,52 @@ def overlay_histogram(species_name, species_for_plot_title, list_of_hist_data, W
     plt.xlabel("Ks")
     ax2.set(ylabel="Error")
     ax1.set(ylabel="Density")
+    ax1.set(xlim=[0,0.1])
+    ax2.set(xlim=[0,0.1])
     #ax1.set(title ='Ks histogram for ' +  species_for_plot_title)
     #ax1.set(title ='$\Gamma + \mathit{\Gamma}$')
     #\n{1} pairs of genes. ~{2} retained from WGD.".format(
     #    species_name, num_pairs, num_after_wgd))
     fig.suptitle(species_for_plot_title, style='italic')
+    plt.tight_layout()
+    plt.savefig(out_png)
+    plt.clf()
+    plt.close()
+
+    return n, bins
+
+def overlay_differences_in_curves(species_for_plot_title, list_of_hist_data, WGD_ks,out_png):
+
+    colors = [config.allo_color,config.color_blind_friendly_color_cycle_analogs['green'],
+              config.color_blind_friendly_color_cycle_analogs['brown']]
+    labels = ['SpecKS','truth']
+    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+
+    for i in range(0,len(list_of_hist_data)):
+        hist_data =list_of_hist_data[i]
+        [n, bins]=hist_data
+        width=(bins[2]-bins[1])
+        xs=[b + i*width for b in bins[0:len(bins)-1]]
+        plt.plot(xs,n,c=colors[i], alpha=1, label=labels[i])
+
+    diffs = [(list_of_hist_data[0][0][j]-list_of_hist_data[1][0][j]) for j in range(0,len(list_of_hist_data[1][0]))]
+    rmse=math.sinh(sum([d*d for d in diffs])/len(diffs))
+    hist_data0 = list_of_hist_data[1]
+    ys0=hist_data0[0]
+    xs0=hist_data0[1]
+
+    for i in range(0,len(ys0)):
+        if i==0:
+            ax.add_patch(Rectangle((xs0[i], ys0[i]), width, diffs[i], color=colors[2],
+                                alpha=0.15, label="rmse: "+ str(round(rmse,4))))
+        else:
+            ax.add_patch(Rectangle((xs0[i], ys0[i]), width, diffs[i], color=colors[2],
+                                alpha=0.15))
+
+    plt.legend()
+    plt.xlabel("Ks")
+    ax.set(ylabel="Density")
+    plt.title(species_for_plot_title, style='italic')
     plt.tight_layout()
     plt.savefig(out_png)
     plt.clf()
@@ -245,8 +289,14 @@ def parse_external_ksfile(ks_file):
         olea_ks_array = olea_ks_df.loc[:, "Node Ks"]
         ks_data = [k for k in olea_ks_array.tolist() if k <= 2]
     else:    #KS rates input file
-        ks_data = parse_ks(ks_file)
+        ks_data = parse_ks_rates(ks_file)
     return ks_data
 
+def parse_ks_rates(input_file):
+    ks_df=pd.read_csv(input_file, sep='\t', header=0)
+    ks_array = ks_df.loc[:,"Ks"]
+    ks_list = [k for k in ks_array.tolist() if k <= 2]
+    #print(ks_list[1:10])
+    return ks_list
 if __name__ == '__main__':
     unittest.main()

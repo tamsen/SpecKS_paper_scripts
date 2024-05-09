@@ -9,6 +9,8 @@ from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+
+import config
 from results_viewer.allo_auto_predictor import read_xs_ys_csv, categorize_sim
 
 
@@ -33,14 +35,14 @@ class TestLinearRegression(unittest.TestCase):
 
         csv_file=os.path.join(out_folder,file_basename)
         specs, data, target = load_allo_vs_auto_data(csv_file)
-        colors = ["red" if m == 0 else "blue" for m in target]
+        colors = [config.auto_color if m == 0 else config.allo_color for m in target]
         linear_regression_threshold_color = 'black'
         likely_range_for_threshold = np.arange(0.8, 2, 0.001)
         custom_prob_thresholds =  np.arange(0, 1, 0.01)
         ROC_plot_base_name = "ROC for inferred allo-vs-auto classification"
         threshold_plot_title = "Threshold applied to allo-vs-auto index"
         threshold_plot_labels_by_case={0:"true autopolyploid",1:"true allopolyploid"}
-        case0_color="red"
+        case0_color=config.auto_color
         xlabel = "true separation in time between WGD and SPC"
         ylabel = "inferred separation in time"
         make_both_ROC_plots(ROC_plot_base_name, colors, data, likely_range_for_threshold,
@@ -54,22 +56,22 @@ class TestLinearRegression(unittest.TestCase):
         out_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
         xlabel = "SPC time"
         ylabel = "ln(metric3)"
-
+        medium_color=config.color_blind_friendly_color_cycle_analogs['gray']
         # Note, the input file is created by "metric3.csv"
         # created by "test_parse_agg_results" in the batch_aggregator.py
 
-        cutoff = 100 #MY (change to 60 or 100 as desired)
+        cutoff = 60 #MY (change to 60 or 100 as desired)
         sims,specs,true_category,data=get_highN_vs_lowN_truth(cutoff)
 
         target1 = [0 if m == "Low" else 1 for m in true_category]
-        colors1 = ["red" if m == 0  else "gray" for m in target1]
-        linear_regression_threshold_color1 = 'gray'
+        colors1 = [config.auto_color if m == 0  else medium_color for m in target1]
+        linear_regression_threshold_color1 = medium_color
         likely_range_for_threshold = np.arange(-6, -4, 0.001)
         custom_prob_thresholds = np.arange(0, 1, 0.01)
         ROC_plot_base_name="ROC for low-vs-high&medium Ne classification"
         threshold_plot_title="threshold_on_low_vs_high&medium_N_data"
         threshold_plot_labels_by_case={0:"Low",1:"Medium&High"}
-        case0_color="red"
+        case0_color=config.auto_color
         linear_regression_threshold1,clf1=make_both_ROC_plots(ROC_plot_base_name,
                                  colors1, data, likely_range_for_threshold,
                                                               custom_prob_thresholds,
@@ -78,14 +80,14 @@ class TestLinearRegression(unittest.TestCase):
                                  threshold_plot_title, threshold_plot_labels_by_case)
 
         target2 = [1 if m == "High" else 0 for m in true_category]
-        colors2 = ["gray" if m == 0 else "blue" for m in target2]
-        linear_regression_threshold_color2 = 'blue'
+        colors2 = [medium_color if m == 0 else config.allo_color for m in target2]
+        linear_regression_threshold_color2 = config.allo_color
         likely_range_for_threshold = np.arange(-6, -1, 0.01)
         custom_prob_thresholds = np.arange(0, 1, 0.01)
         ROC_plot_base_name = "ROC for low&medium-vs-high Ne classification"
         threshold_plot_title = "threshold_on_low&medium_vs_high_N_data"
         threshold_plot_labels_by_case={0:"Low&Medium",1:"High"}
-        case0_color="red"
+        case0_color= config.auto_color
         linear_regression_threshold2,clf2=make_both_ROC_plots(ROC_plot_base_name,
                                  colors2, data, likely_range_for_threshold,
                                                               custom_prob_thresholds,
@@ -95,7 +97,7 @@ class TestLinearRegression(unittest.TestCase):
 
         #plot the two thresholds together
         threshold_plot_title3 = "Threshold applied to high-vs-low Ne"
-        colors3 = ["blue" if m == "High" else "gray" if m == "Medium" else "red" for m in true_category]
+        colors3 = [config.auto_color if m == "High" else medium_color if m == "Medium" else config.allo_color for m in true_category]
         plot_2_thresholds_against_data(colors3, data, linear_regression_threshold1, linear_regression_threshold2,
                                             linear_regression_threshold_color1, linear_regression_threshold_color2,
                                             out_folder, specs, threshold_plot_title3)
