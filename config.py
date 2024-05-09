@@ -158,6 +158,15 @@ def parse_comma_separated_values(input_string):
         splat = cleaned_string.split(",")
         return splat
 
+# A color blind/friendly color cycle for Matplotlib line plots
+# from https://gist.github.com/thriveth/8560036
+color_blind_friendly_color_cycle_analogs = {'blue': '#377eb8', 'orange': '#ff7f00', 'green': '#4daf4a',
+                  'pink':'#f781bf', 'brown':'#a65628', 'purple':'#984ea3',
+                  'gray':'#999999', 'red':'#e41a1c', 'yellow':'#dede00'}
+
+allo_color=color_blind_friendly_color_cycle_analogs['blue']
+auto_color=color_blind_friendly_color_cycle_analogs['orange']
+histogram_y_label="# paralog pairs"
 
 class PolyploidParams:
     SPC_time_MYA = 0

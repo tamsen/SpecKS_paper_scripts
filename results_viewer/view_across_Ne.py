@@ -61,27 +61,18 @@ def get_Ne_series_histograms_for_runs_in_batch(out_folder, sample_name,
     batches=list(allo_csv_files_by_batch.keys())
     ne_string = [s.split('_')[-1].replace('N','').replace('p','.') for s in batches]
     num_batches=len(batches)
-    ncols=3;nrows=2
-    #fig, ax = plt.subplots(nrows, ncols,figsize=(8,4))
     fig, ax = plt.subplots(2, 5,figsize=(20,10))
     fig.suptitle(sample_name + " for " + replicate +", "+ alg + " algorithm")
 
     for batch_idx in range(0,num_batches):
 
-            #col=batch_idx+1
-            #row=0
-            #if col >= ncols:
-            ##    col = col -ncols
-             #   row = 1
             row=0;col=batch_idx
             ax[row,col].set_title("Ne*Gt="+ne_string[batch_idx], fontsize=20)
-
-
             [csvs_for_allo_result,params]= allo_csv_files_by_batch[batches[batch_idx]]
             ks_for_allo_result= csvs_for_allo_result[spec][replicate][alg]
             hist_data=make_Ne_series_histogram_subplot(ax[row,col], spec, ks_for_allo_result,
                                                        bin_size, params,
-                                                       max_Ks_for_x_axis, max_Y,"blue")
+                                                       max_Ks_for_x_axis, max_Y,config.allo_color)
             out_file_name = os.path.join(out_folder, "allo" + batches[batch_idx] + ".hist.csv")
             time_series_histogrammer.save_hist_to_csv(hist_data, out_file_name)
 
@@ -90,7 +81,7 @@ def get_Ne_series_histograms_for_runs_in_batch(out_folder, sample_name,
             ks_for_auto_result= csvs_for_auto_result[spec][replicate][alg]
             hist_data=make_Ne_series_histogram_subplot(ax[row,4-col], spec, ks_for_auto_result,
                                              bin_size, params,
-                                              max_Ks_for_x_axis, max_Y,"red")
+                                              max_Ks_for_x_axis, max_Y,config.auto_color)
 
             ax[1, batch_idx].set(xlabel="Ks")
 
@@ -99,8 +90,8 @@ def get_Ne_series_histograms_for_runs_in_batch(out_folder, sample_name,
 
 
 
-    ax[1,0].set(ylabel="# gene pairs in bin")
-    ax[0,0].set(ylabel="# gene pairs in bin")
+    ax[1,0].set(ylabel=config.histogram_y_label)
+    ax[0,0].set(ylabel=config.histogram_y_label)
     plt.tight_layout()
     out_file_name=os.path.join(out_folder, "histogram_across_ne" + "_plot_" + spec +
                                "_" + replicate + "_" + str(max_Ks_for_x_axis) + ".png")

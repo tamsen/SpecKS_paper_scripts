@@ -114,21 +114,25 @@ def read_list_of_curated_WGD_to_use_for_analysis(saved_curated_wgd_name):
 
 def plot_histogram_of_metric3_over1KP(metrics_for_hist, output_folder):
 
+    colors_by_category = {"Low": config.auto_color,
+                          "Medium":config.color_blind_friendly_color_cycle_analogs['gray'],
+                          "High": config.allo_color}
+
     fig = plt.figure(figsize=(4, 5), dpi=100)
     n, bins, patches = plt.hist(metrics_for_hist, bins=100, facecolor='b', alpha=1, label='histogram data')
     lmt=get_low_to_medium_threshold()
     mht=get_medium_to_high_threshold()
-    plt.axvline(x=lmt, color='gray', linestyle='--', label="lvm thresh")
-    plt.axvline(x=mht, color='blue', linestyle='--', label="mvh thresh")
+    plt.axvline(x=lmt, color=colors_by_category["Medium"], linestyle='--', label="lvm thresh")
+    plt.axvline(x=mht, color=colors_by_category["High"], linestyle='--', label="mvh thresh")
 
     for i in range(0,len(patches)):
         bini=bins[i]
         if bini <=lmt:
-            patches[i].set_facecolor('red')
+            patches[i].set_facecolor(colors_by_category["Low"])
         elif bini <= mht:
-            patches[i].set_facecolor('gray')
+            patches[i].set_facecolor(colors_by_category["Medium"])
         else:
-            patches[i].set_facecolor('blue')
+            patches[i].set_facecolor(colors_by_category["High"])
 
     plt.ylabel("# species")
     plt.xlabel("high-vs-low Ne discrimination metric value")
@@ -178,7 +182,9 @@ def analyze_metric_results(input_metrics_file, out_folder):
             return well_behaved_wgd_histograms
 
 def make_violin_plot(out_folder, plot_data, plot_name, plot_to_make):
-    colors_by_category = {"Low": "red", "Medium": "gray", "High": "blue"}
+    colors_by_category = {"Low": config.auto_color,
+                          "Medium":config.color_blind_friendly_color_cycle_analogs['gray'],
+                          "High": config.allo_color}
     categories = colors_by_category.keys()
     data = []
     data_labels = []
@@ -196,11 +202,11 @@ def make_violin_plot(out_folder, plot_data, plot_name, plot_to_make):
     for pc, color in zip(plots['bodies'], colors):
         pc.set_facecolor(color)
         pc.set_alpha(1)
-    ax.axhline(y=get_low_to_medium_threshold(), color='gray', linestyle='--')
+    ax.axhline(y=get_low_to_medium_threshold(), color=colors_by_category["Medium"], linestyle='--')
     #           #label="lvm disc. criteria"
     #           #                                                                     + " ({0})".format(
     #    round(get_low_to_medium_threshold(), 2)))
-    ax.axhline(y=get_medium_to_high_threshold(), color='blue', linestyle='--')
+    ax.axhline(y=get_medium_to_high_threshold(), color=colors_by_category["High"], linestyle='--')
     #fig.suptitle(plot_to_make[2])
     #ax.set(xlabel=plot_to_make[1])
     #ax.set(ylabel="log(fit cm-mode)")

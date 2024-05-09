@@ -11,6 +11,8 @@ from sklearn.metrics import mean_squared_error
 from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
+
+import config
 from results_viewer import curve_fitting
 from results_viewer.batch_histogrammer import get_truth_from_name_list
 
@@ -209,11 +211,17 @@ class AlloAutoPredictor(unittest.TestCase):
             plot_error_vs_metric(errors_for_test, metric, metric_name,
                                  sims_names_list, test_i, tests, out_folder)
 
-        mode_predictions=[100*mode_dict[s]for s in sims_names_list]
-        wgd_truths=[allo_vs_auto_truth_by_sim[s][1] for s in sims_names_list]
+        mode_predictions = [100 * mode_dict[s] for s in sims_names_list]
+        wgd_truths = [allo_vs_auto_truth_by_sim[s][1] for s in sims_names_list]
+        mode_predictions_auto_only = [100 * mode_dict[s] for s in sims_names_list if "Auto" in s]
+        wgd_truths_auto_only = [allo_vs_auto_truth_by_sim[s][1] for s in sims_names_list if "Auto" in s]
+        mode_predictions_allo_only = [100 * mode_dict[s] for s in sims_names_list if "Allo" in s]
+        wgd_truths_allo_only = [allo_vs_auto_truth_by_sim[s][1] for s in sims_names_list if "Allo" in s]
+
         tests=["mode vs WGD time"]
         errors=[mode_predictions[j]-wgd_truths[j] for j in range(0,len(mode_predictions))]
-        plot_data_and_CI_for_mode_prediction(mode_predictions,wgd_truths, discrim_criteria_midpoint, num_data_points,
+        plot_data_and_CI_for_mode_prediction(mode_predictions_allo_only,wgd_truths_allo_only,
+                                             mode_predictions_auto_only, wgd_truths_auto_only,
                                  out_folder, sims_names_list, 0, tests)
 
         metric = [allo_vs_auto_truth_by_sim[s][2] for s in sims_names_list]
@@ -302,42 +310,56 @@ class AlloAutoPredictor(unittest.TestCase):
 
 def plot_error_vs_metric(error, metric, metric_name,
                      sims_names_list, test_i, tests, out_folder):
-    colors = ["red" if "Auto" in s else "blue" for s in sims_names_list]
-
-    alphas = [1 if "Auto" in s else 0.25 for s in sims_names_list]
+    colors = [config.auto_color if "Auto" in s else config.allo_color for s in sims_names_list]
+    ci_percent=99.99
+    alphas = [0.25 if "Auto" in s else 0.25 for s in sims_names_list]
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
     plt.scatter( metric,error, alpha=alphas,
                 c=colors)
 
-    if test_i == 2:
-        ax.set(xlabel="<--auto    truth (MY)   allo-->")
-        ax.set(ylabel="<--auto  prediction (MY) allo-->")
-        ax.set(title="Predictions of polyploid index (SPEC - WGD time, in MY)")
+    foo = pd.DataFrame({'error': error,
+                        'metric': metric})
 
-    else:
-        ax.set(xlabel=metric_name)
-        ax.set(ylabel="prediction error")
+    sns.regplot(data=foo, x='metric', y='error', color='k',ci=ci_percent,marker=None,scatter=False,
+                label="CI at {0}%\n(all data)".format(ci_percent),
+                line_kws={"linewidth":1})
+
+    #if test_i == 2:
+    #    ax.set(xlabel="<--auto    truth (MY)   allo-->")
+    #    ax.set(ylabel="<--auto  prediction (MY) allo-->")
+    #    ax.set(title="Predictions of polyploid index (SPEC - WGD time, in MY)")
+
+    #else:
+    ax.set(xlabel=metric_name)
+    ax.set(ylabel="prediction error")
     ax.set(ylim=[-10,65])
-    #plt.legend()
+    plt.legend()
     plot_file = os.path.join(out_folder, tests[test_i] + "_error_vs_" + metric_name +".png")
     plt.savefig(plot_file)
     plt.close()
     return plot_file
 
-def plot_data_and_CI_for_mode_prediction(ava_predictions, ava_truth, discrim_criteria_midpoint, num_data_points, out_folder,
-                     sims_names_list, test_i, tests):
+def plot_data_and_CI_for_mode_prediction(ava_predictions_allo, ava_truth_allo,
+                                         ava_predictions_auto, ava_truth_auto,out_folder,
+                                        sims_names_list, test_i, tests):
 
-    colors = ["red" if "Auto" in s else "blue" for s in sims_names_list]
-    ci_shading = ["auto CI at 95%" if "Auto" in s else "allo CI at 95%"  for s in sims_names_list]
-    alphas = [1 if "Auto" in s else 0.25 for s in sims_names_list]
+    ci_percent=99.99
+    ci_shading_auto = ["CI at {0}% (auto only)".format(ci_percent) for s in sims_names_list if "Auto" in s]
+    #alphas = [0.25 if "Auto" in s else 0.25 for s in sims_names_list]
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    plt.scatter(ava_truth, ava_predictions, alpha=alphas,
-                c=colors)
+    plt.scatter(ava_truth_auto, ava_predictions_auto, alpha=1,
+                c=config.auto_color, label="auto")
+    plt.scatter(ava_truth_allo, ava_predictions_allo, alpha=0.5,
+                c=config.allo_color, label="allo")
 
-    foo = pd.DataFrame({'truth': ava_truth,
-                        'prediction': ava_predictions,
-                        'CI': ci_shading})
-    sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=["darkblue",'darkred'], )
+    foo = pd.DataFrame({'truth': ava_predictions_auto,
+                        'prediction': ava_truth_auto,
+                        'CI': ci_shading_auto})
+    #sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=['k'],
+    #             errorbar=('ci', ci_percent))
+    sns.regplot(data=foo, x='truth', y='prediction', color='k',ci=ci_percent,marker=None,scatter=False,
+                label="CI at {0}%\n(autos only)".format(ci_percent),
+                line_kws={"linewidth":1})
     ax.set(xlabel="truth (MY)")
     ax.set(ylabel="prediction (MY)")
     plt.legend()
@@ -349,15 +371,33 @@ def plot_data_and_CI_for_mode_prediction(ava_predictions, ava_truth, discrim_cri
 def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_data_points, out_folder,
                      sims_names_list, test_i, tests):
     #colors = ["red" if "Auto" in s else "blue" for s in sims_names_list]
-    colors = ["k" if "Auto" in s else "k" for s in sims_names_list]
-    ci_shading = ["CI at 95%" for s in sims_names_list]
-    alphas = [1 if "Auto" in s else 0.25 for s in sims_names_list]
-    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    plt.scatter(ava_truth, ava_predictions, alpha=alphas,
-                c=colors, label=tests[test_i] + ", truth vs prediction\nn={0}".format(num_data_points))
+    ci_percent=99.99
+    colors = [config.auto_color if "Auto" in s else config.allo_color for s in sims_names_list]
+    ci_shading = ["CI at {0}% (auto and allo)".format(ci_percent) for s in sims_names_list]
+    alphas = [1 if "Auto" in s else 0.5 for s in sims_names_list]
+    fig, ax = plt.subplots(1, 1, figsize=(5,5))
+    auto_labeled=False; allo_labeled=False
+
+    for i in range(0,len(ava_truth)):
+        color=colors[i]
+        if color==config.auto_color and not auto_labeled:
+                plt.scatter(ava_truth[i], ava_predictions[i], alpha=alphas[i],
+                            c=color, label="auto")
+                auto_labeled=True
+        elif color==config.allo_color and not allo_labeled:
+                plt.scatter(ava_truth[i], ava_predictions[i], alpha=alphas[i],
+                            c=color, label="allo")
+                allo_labeled=True
+        else:
+            plt.scatter(ava_truth[i], ava_predictions[i], alpha=alphas[i],
+                c=color)
 
     foo = pd.DataFrame({'truth': ava_truth, 'prediction': ava_predictions, 'CI': ci_shading})
-    sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=['k'],errorbar=('ci', 95) )
+    #sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=['k'],errorbar=('ci', ci_percent) )
+    sns.regplot(data=foo, x='truth', y='prediction', color='k',ci=ci_percent,marker=None,scatter=False,
+                label="CI at {0}%\n(all data)".format(ci_percent),
+                line_kws={"linewidth":1})
+
     if test_i == 2:
         ax.set(xlabel="<--auto    truth (MY)   allo-->")
         ax.set(ylabel="<--auto  prediction (MY) allo-->")

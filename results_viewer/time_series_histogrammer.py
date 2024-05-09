@@ -15,7 +15,7 @@ class TimeSeriesHistogrammer(unittest.TestCase):
         plot_title=("Time series for sim N5")
 
         input_folder=os.path.join( "/home/tamsen/Data/Specks_outout_from_mesx",batch_name)
-        output_folder=os.path.join(input_folder,"analysis")
+        output_folder=input_folder#os.path.join(input_folder,"analysis")
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
@@ -27,7 +27,7 @@ class TimeSeriesHistogrammer(unittest.TestCase):
         print("Making plots..")
         bin_size = 0.001
         max_Ks = 0.75
-        max_Ys= [80,250]
+        max_Ys= [250,250]
 
         for spec in ['polyploid']:#species:
             get_time_series_histograms_for_runs_in_batch(output_folder, plot_title,
@@ -54,9 +54,9 @@ def get_time_series_histograms_for_runs_in_batch(out_folder, sample_name, csvfil
     fig.suptitle(sample_name + " for " + replicate +", "+ alg + " algorithm")
     ax[0].set_title("Allopolyploid\n",fontsize=15)
     ax[1].set_title("Autopolyploid\n",fontsize=15)
-    colors=['blue','red']
-    red_interval = 1.4 / num_spec_times
-    blue_interval = 2 / num_spec_times
+    colors=[config.allo_color, config.auto_color]
+    red_color_interval = 1.4 / num_spec_times
+    blue_color_interval = 2 / num_spec_times
     for sim_idx in range(0, num_spec_times):
 
         allo_group="Allo"+str(sim_idx+1)
@@ -71,10 +71,10 @@ def get_time_series_histograms_for_runs_in_batch(out_folder, sample_name, csvfil
                 continue
             this_ax = ax[spec_mode_idx]
             color = colors[spec_mode_idx]
-            if color=='red':
-                amount = 0.4 + sim_idx * red_interval
+            if color==config.auto_color:
+                amount = 0.4 + sim_idx * red_color_interval
             else:
-                amount = 0.2 + sim_idx *blue_interval
+                amount = 0.2 + sim_idx *blue_color_interval
 
             new_color = lighten_color(color, amount=amount)
 
@@ -91,9 +91,9 @@ def get_time_series_histograms_for_runs_in_batch(out_folder, sample_name, csvfil
             save_hist_to_csv(hist_data, out_file_name)
 
 
-            this_ax.set(xlabel="<-- ks as MYA -->")
+            this_ax.set(xlabel="~MYA (Ks*{0})".format(config.SpecKS_config.Ks_per_Myr))
 
-    ax[0].set(ylabel="<- # paralog pairs -> ")
+    ax[0].set(ylabel=config.histogram_y_label)
     plt.tight_layout()
     out_file_name=os.path.join(out_folder, "histogram" + "_plot_" + spec +
                                "_" + replicate + "_" + str(max_Ks_for_x_axis) + ".png")
