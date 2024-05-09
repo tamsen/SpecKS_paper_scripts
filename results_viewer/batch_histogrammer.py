@@ -8,7 +8,7 @@ class BatchHistogrammer(unittest.TestCase):
 
     def test_make_histograms_for_batch(self):
 
-        batch_name="sim37_N5" ##"sim37_N20" #sim37_N0p1,sim37_N5,sim40_1p0,sim40_5p0,sim40_10p0"
+        batch_name="sim37_N1" ##"sim37_N20" #sim37_N0p1,sim37_N5,sim40_1p0,sim40_5p0,sim40_10p0"
         plot_title=("Simulation with custom GBD model, \n" +\
                     "with Ne-driven allopolyploid ortholog divergence ({0})".format(batch_name))
 
@@ -186,17 +186,15 @@ def get_histograms_for_runs_in_batch(out_folder, sample_name, csvfiles_by_polypl
             maxY = y_max_by_SPC[params.SPC_time_MYA]
             polyploid_index = params.SPC_time_MYA - params.WGD_time_MYA
             if polyploid_index ==0:
-                plot_color="red"
+                plot_color=config.auto_color
                 ax[0, result_idx].set_title("Autopolyploid\nSPC=WGD", fontsize=10)
             else:
-                plot_color="blue"
+                plot_color=config.allo_color
                 ax[0, result_idx].set_title("Allopolyploid\nSPC-WGD="+str(polyploid_index), fontsize=10)
             hist_data=make_histogram_subplot(this_ax, spec, ks_for_allo_result,
                                         bin_size, params,
                                         max_Ks, maxY,plot_color)
 
-            #ax[sim_idx, result_idx].text(params.SPC_time_MYA* config.SpecKS_config.Ks_per_Myr * 0.5,
-            #                             maxY*0.8, "SPC="+str(params.SPC_time_MYA))
             ax[sim_idx, result_idx].text(0,maxY*0.8, " SPC="+str(params.SPC_time_MYA))
             ax[sim_idx, result_idx].text(0,maxY*0.6, " WGD="+str(params.WGD_time_MYA))
             out_file_name = os.path.join(out_folder, allo_result_name + ".hist.csv")
@@ -228,20 +226,17 @@ def make_histogram_subplot(this_ax, spec, Ks_results, bin_size, params,
     default_xaxis_limit =SPEC_as_Ks + 0.2
     x = Ks_results
     num_gene_pairs_str=str(len(Ks_results))
-    polyploid_index = params.SPC_time_MYA - params.WGD_time_MYA
-
 
     bins = np.arange(0, max_Ks + 0.1, bin_size)
     n, bins, patches = this_ax.hist(x, bins=bins, facecolor=plot_color, alpha=1)
-    #        label='ks hist ({0} pairs)'.format(num_gene_pairs_str))
 
     hist_result=[n, bins]
     hist_maximum=max(n)
     ymax_suggestion=hist_maximum*1.6
 
-
-    this_ax.axvline(x=WGD_as_Ks, color='gray', linestyle='-', label="WGD:" + str(params.WGD_time_MYA))
-    this_ax.axvline(x=SPEC_as_Ks, color='gray', linestyle='--', label="SPC:" + str(params.SPC_time_MYA))
+    gray=config.color_blind_friendly_color_cycle_analogs['gray']
+    this_ax.axvline(x=WGD_as_Ks, color=gray, linestyle='-', label="WGD:" + str(params.WGD_time_MYA))
+    this_ax.axvline(x=SPEC_as_Ks, color=gray, linestyle='--', label="SPC:" + str(params.SPC_time_MYA))
 
 
     if maxY:
