@@ -1,0 +1,8 @@
+log,config,start time,end time,delta time,sim time range,num genes
+m04d24y2024_h08m26s08_SpecKS_log.txt,Auto5_S015W015.xml,"24/04/2024,08:26:08","24/04/2024,08:35:40",9,100MY,3000
+m04d24y2024_h08m36s29_SpecKS_log.txt,Auto7_S005W005.xml',"24/04/2024,08:36:29","24/04/2024,08:46:31:",10,100MY,3000
+m04d24y2024_h08m39s20_SpecKS_log.txt,Auto6_S010W010.xml,"24/04/2024,08:39:20:","24/04/2024,08:47:38:",8,100MY,3000
+m04d24y2024_h13m59s20_SpecKS_log.txt,Allo7_S005W000.xml,"24/04/2024,13:59:20:","24/04/2024,14:10:01:",11,100MY,3000
+,,,,,,
+,,,sum,38,,
+,,,avg,9.5,,
