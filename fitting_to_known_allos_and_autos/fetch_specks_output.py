@@ -11,8 +11,8 @@ class MyTestDownloaderForFits(unittest.TestCase):
 
     def test_download_mesx_results(self):
 
-        batch_folder = "sim41_Maize" #'sim41_coffee' #sim41_Poplar' #"sim41_Maize"
-        polyploid_name = 'Allo7_Maize' #'Allo_Coffea7' #'Allo_Poplar6'  #'Allo5_Maize'
+        batch_folder = "sim41_coffee" #'sim41_coffee' #sim41_Poplar' #"sim41_Maize"
+        polyploid_name = 'Allo_Coffea11' #'Allo_Coffea7' #'Allo_Poplar6'  #'Allo5_Maize'
         me_at_remote_URL =  'tdunn@mesx.sdsu.edu'
         local_output_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
         remote_output_folder = "/usr/scratch2/userdata2/tdunn/SpecKS_Output"
