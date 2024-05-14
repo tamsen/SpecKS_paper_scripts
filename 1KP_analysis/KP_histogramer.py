@@ -2,7 +2,6 @@ import os
 import unittest
 
 import config
-import results_viewer.batch_analyzer
 from matplotlib import pyplot as plt
 from scipy.signal import find_peaks
 from results_viewer import curve_fitting, batch_analyzer
@@ -12,7 +11,7 @@ def analyze_histogram(bins, n, WGD_time_MYA, SPC_time_MYA,
                       kernel_size, maxY, right_most_ssd_peak, out_file_name):
     linewidth = 4
     polyploid_name=os.path.basename(out_file_name).replace(".png","")
-    fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+    fig, ax = plt.subplots(1, 1, figsize=(5,5))
     fig.suptitle('Histogram analysis for ' + polyploid_name)
     WGD_as_Ks = WGD_time_MYA * config.SpecKS_config.Ks_per_Myr
     SPEC_as_Ks =SPC_time_MYA * config.SpecKS_config.Ks_per_Myr

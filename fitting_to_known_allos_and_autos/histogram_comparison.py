@@ -12,7 +12,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_coffee_histogram(self):
 
-        coffee_num=13
+        coffee_num=14
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim41_coffee/Allo_Coffea{0}".format(coffee_num)
@@ -37,7 +37,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_poplar_histogram(self):
 
-        pop_num=14
+        pop_num=15
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder = "/home/tamsen/Data/Specks_outout_from_mesx/sim41_Poplar/Allo_Poplar{0}".format(pop_num)
@@ -61,7 +61,7 @@ class MyTestCase(unittest.TestCase):
                              species_run_name, species_for_plot_title, specks_full_path)
     def test_maize_histogram(self):
 
-        maize_num="12"
+        maize_num="13"
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim41_Maize/Allo{0}_Maize".format(maize_num)

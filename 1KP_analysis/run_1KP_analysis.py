@@ -63,7 +63,7 @@ class Test1KP(unittest.TestCase):
 
             #get hist data
             sample_name=species
-            fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+            fig, ax = plt.subplots(1, 1, figsize=(10,10))
             fig.suptitle(sample_name)
             params=config.PolyploidParams(-1, -1, sample_name)
             hist_data=batch_histogrammer.make_histogram_subplot(ax,  sample_name,ks_values,
