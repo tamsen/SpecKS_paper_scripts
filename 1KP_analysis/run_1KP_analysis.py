@@ -5,7 +5,8 @@ import unittest
 from matplotlib import pyplot as plt
 import config
 import kp_reader
-from results_viewer import batch_analyzer, batch_histogrammer, curve_fitting, batch_aggregator
+import KP_histogramer
+from results_viewer import batch_analyzer, batch_histogrammer, batch_aggregator
 
 
 class Test1KP(unittest.TestCase):
@@ -26,7 +27,7 @@ class Test1KP(unittest.TestCase):
         lookup_file = "1KP-Sample-List.csv"
         sample_lookup = kp_reader.get_sample_code_lookup(lookup_file)
 
-        reanalyze=False
+        reanalyze=True
         use_only_curated_data=True
         bin_size=0.001
         right_most_ssd_peak = 0.08
@@ -82,7 +83,7 @@ class Test1KP(unittest.TestCase):
             out_fit_png = os.path.join(output_folder, "fit" + "_plot_" +  sample_name+
                                          "_" + species_code + "_"+ str(max_Ks) + ".png")
 
-            fit_results = batch_analyzer.analyze_histogram(*hist_data3, params.WGD_time_MYA, params.SPC_time_MYA,
+            fit_results = KP_histogramer.analyze_histogram(*hist_data3, params.WGD_time_MYA, params.SPC_time_MYA,
                                             kernel_size, False, right_most_ssd_peak, out_fit_png)
 
             results_by_file[Ks_file]=fit_results
