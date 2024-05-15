@@ -117,6 +117,8 @@ def read_Ks_csv(csv_file):
                 continue
             if "Git" in line:
                 continue
+            if "leaf names" in line:
+                continue
             if not line:
                 break
             if len(line)==0:

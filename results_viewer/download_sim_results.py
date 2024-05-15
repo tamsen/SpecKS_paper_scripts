@@ -70,9 +70,11 @@ class MyTestDownloader(unittest.TestCase):
         print(scp_commands)
 
 def get_run_folders_by_polyploid_name(run_folders):
+
     directory_groups = run_folders.split("\n\n")
-    #print(run_folders)
-    #print(directory_groups)
+    #directory_groups = run_folders.split("\n")
+    print("run_folders:\n\n" + run_folders)
+    print("directory_groups:\t" + str(directory_groups))
     run_folder_by_polyploid_name = {}
     for group in directory_groups:
         paths = group.split("\n")
@@ -85,7 +87,7 @@ def get_run_folders_by_polyploid_name(run_folders):
 
             if not "." in path:
                 poyploid_names.append(path)
-
+                print("polyploid directory_groups:" + path)
         for polyploid in poyploid_names:
             run_folder_by_polyploid_name[polyploid] = directory_name
     return run_folder_by_polyploid_name
