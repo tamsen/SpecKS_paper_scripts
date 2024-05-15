@@ -6,13 +6,13 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 import config
-from results_viewer import batch_histogrammer
+from results_viewer import batch_histogrammer, curve_fitting
 
 class MyTestCase(unittest.TestCase):
 
     def test_coffee_histogram(self):
 
-        coffee_num=14
+        coffee_num=15
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim41_coffee/Allo_Coffea{0}".format(coffee_num)
@@ -25,10 +25,10 @@ class MyTestCase(unittest.TestCase):
         specks_full_path=os.path.join(specks_out_folder,specks_csv_file)
         real_full_path=os.path.join(ksrates_out_folder,ksrates_csv_file)
 
-        bin_size=0.002
+        bin_size=0.001
         max_Ks=0.2
         color='blue'
-        wgd_ks=0.002
+        wgd_ks=0.015
         density = 1
 
         make_both_histograms(bin_size, color, specks_out_folder,
@@ -37,7 +37,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_poplar_histogram(self):
 
-        pop_num=15
+        pop_num=16
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder = "/home/tamsen/Data/Specks_outout_from_mesx/sim41_Poplar/Allo_Poplar{0}".format(pop_num)
@@ -53,7 +53,7 @@ class MyTestCase(unittest.TestCase):
         bin_size = 0.002
         max_Ks = 0.5
         color = 'blue'
-        wgd_ks=0.18
+        wgd_ks=0.21
         density = 1
 
         make_both_histograms(bin_size, color, specks_out_folder, wgd_ks,
@@ -61,7 +61,7 @@ class MyTestCase(unittest.TestCase):
                              species_run_name, species_for_plot_title, specks_full_path)
     def test_maize_histogram(self):
 
-        maize_num="13"
+        maize_num="14"
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim41_Maize/Allo{0}_Maize".format(maize_num)
@@ -77,9 +77,8 @@ class MyTestCase(unittest.TestCase):
         bin_size=0.002
         max_Ks=0.3
         color='blue'
-        wgd_ks=0.125
+        wgd_ks=0.13
         density = 1
-
         make_both_histograms(bin_size, color,  specks_out_folder, wgd_ks,
                          max_Ks, density, real_full_path,
                          species_run_name, species_for_plot_title, specks_full_path)
@@ -227,14 +226,25 @@ def overlay_differences_in_curves(species_for_plot_title, list_of_hist_data, WGD
     colors = [config.allo_color,config.color_blind_friendly_color_cycle_analogs['green'],
               config.color_blind_friendly_color_cycle_analogs['brown']]
     labels = ['SpecKS','truth']
+
+
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
 
     for i in range(0,len(list_of_hist_data)):
         hist_data =list_of_hist_data[i]
         [n, bins]=hist_data
         width=(bins[2]-bins[1])
-        xs=[b + i*width for b in bins[0:len(bins)-1]]
-        plt.plot(xs,n,c=colors[i], alpha=1, label=labels[i])
+        bar_plot_xs=[b + i*width for b in bins[0:len(bins)-1]] #to match bar-plot axes
+        sub_bins=bins[0:len(bins) - 1]
+        label=labels[i]
+        if label=='truth':
+
+            #x_value_of_ymax = get_Ks_at_max(WGD_ks, bar_plot_xs, n, sub_bins)
+            label = label +" (peak at Ks=" +str(WGD_ks) + ")"
+            plt.axvline(WGD_ks, color=config.color_blind_friendly_color_cycle_analogs['green'],
+                        linestyle=':')
+        plt.plot(bar_plot_xs,n,c=colors[i], alpha=1, label=label)
+        #plt.plot(sub_bins, n, c=colors[i], alpha=1, label=label)
 
     diffs = [(list_of_hist_data[0][0][j]-list_of_hist_data[1][0][j]) for j in range(0,len(list_of_hist_data[1][0]))]
     rmse=math.sinh(sum([d*d for d in diffs])/len(diffs))
@@ -260,6 +270,25 @@ def overlay_differences_in_curves(species_for_plot_title, list_of_hist_data, WGD
     plt.close()
 
     return n, bins
+
+
+def get_Ks_at_max(WGD_ks, bar_plot_xs, n, sub_bins):
+    true_peak_xs = [];
+    true_peak_ys = []
+    true_peak_bar_xs = []
+    padding = 0.02
+    for bin_i in range(0, len(sub_bins)):
+        xi = sub_bins[bin_i]
+        yi = n[bin_i]
+        bi = bar_plot_xs[bin_i]
+        if (xi > WGD_ks - padding) and (xi < WGD_ks + padding):
+            true_peak_xs.append(xi)
+            true_peak_ys.append(yi)
+            true_peak_bar_xs.append(bi)
+    center_of_mass, x_value_of_ymax = curve_fitting.get_mode_and_cm(
+        true_peak_ys, true_peak_xs)
+    return x_value_of_ymax
+
 
 def parse_external_ksfile(ks_file):
 
