@@ -14,8 +14,8 @@ class MyTestDownloaderForFits(unittest.TestCase):
         #polyploid_names = ['Allo_Coffea17']#,'Allo_Poplar17','Allo15_Maize']
         #batch_folders = ["sim41_coffee"]#, "sim41_Poplar","sim41_Maize"]
 
-        polyploid_names = ['Allo_Coffea18','Allo_Poplar18']
-        batch_folders = ["sim42_coffee", "sim42_Poplar"]
+        polyploid_names = ['Allo_Coffea20','Allo_Poplar20','Allo17_Maize']
+        batch_folders = ["sim42_coffee", "sim42_Poplar", "sim42_Maize"]
 
         me_at_remote_URL =  'tdunn@mesx.sdsu.edu'
         local_output_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
