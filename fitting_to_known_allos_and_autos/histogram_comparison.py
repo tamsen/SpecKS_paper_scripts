@@ -25,7 +25,8 @@ class MyTestCase(unittest.TestCase):
         specks_full_path=os.path.join(specks_out_folder,specks_csv_file)
         real_full_path=os.path.join(ksrates_out_folder,ksrates_csv_file)
 
-        bin_size=0.001
+        #bin_size=0.001
+        bin_size=0.002
         max_Ks=0.2
         color='blue'
         wgd_ks=0.015
@@ -37,7 +38,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_poplar_histogram(self):
 
-        pop_num=20
+        pop_num=22
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder = "/home/tamsen/Data/Specks_outout_from_mesx/sim42_Poplar/Allo_Poplar{0}".format(pop_num)
@@ -61,7 +62,7 @@ class MyTestCase(unittest.TestCase):
                              species_run_name, species_for_plot_title, specks_full_path)
     def test_maize_histogram(self):
 
-        maize_num="17"
+        maize_num="19"
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim42_Maize/Allo{0}_Maize".format(maize_num)
