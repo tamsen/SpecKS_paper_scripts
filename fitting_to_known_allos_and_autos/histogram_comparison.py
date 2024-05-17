@@ -62,7 +62,7 @@ class MyTestCase(unittest.TestCase):
                              species_run_name, species_for_plot_title, specks_full_path)
     def test_maize_histogram(self):
 
-        maize_num="19"
+        maize_num="21"
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim42_Maize/Allo{0}_Maize".format(maize_num)
@@ -195,7 +195,7 @@ def overlay_histogram(species_name, species_for_plot_title, list_of_hist_data, W
                 color=colors[i], alpha=1, label=labels[i])
     #ax[0].axvline(x=WGD_ks, color='b', linestyle='-', label="WGD paralog start")
     diffs = [(list_of_hist_data[0][0][j]-list_of_hist_data[1][0][j]) for j in range(0,len(list_of_hist_data[1][0]))]
-    rmse=math.sinh(sum([d*d for d in diffs])/len(diffs))
+    rmse=math.sqrt(sum([d*d for d in diffs])/len(diffs))
     ax2.bar(xs, diffs , width=width,
             color='orange', alpha=1, label="error\nrmse={0}".format(round(rmse,3)))
 
@@ -238,17 +238,17 @@ def overlay_differences_in_curves(species_for_plot_title, list_of_hist_data, WGD
         bar_plot_xs=[b + i*width for b in bins[0:len(bins)-1]] #to match bar-plot axes
         sub_bins=bins[0:len(bins) - 1]
         label=labels[i]
-        if label=='truth':
+        #if label=='truth':
 
             #x_value_of_ymax = get_Ks_at_max(WGD_ks, bar_plot_xs, n, sub_bins)
-            label = label +" (peak at Ks=" +str(WGD_ks) + ")"
-            plt.axvline(WGD_ks, color=config.color_blind_friendly_color_cycle_analogs['green'],
-                        linestyle=':')
+            #label = label +" (peak at Ks=" +str(WGD_ks) + ")"
+            #plt.axvline(WGD_ks, color=config.color_blind_friendly_color_cycle_analogs['green'],
+            #            linestyle=':')
         plt.plot(bar_plot_xs,n,c=colors[i], alpha=1, label=label)
         #plt.plot(sub_bins, n, c=colors[i], alpha=1, label=label)
 
     diffs = [(list_of_hist_data[0][0][j]-list_of_hist_data[1][0][j]) for j in range(0,len(list_of_hist_data[1][0]))]
-    rmse=math.sinh(sum([d*d for d in diffs])/len(diffs))
+    rmse=math.sqrt(sum([d*d for d in diffs])/len(diffs))
     hist_data0 = list_of_hist_data[1]
     ys0=hist_data0[0]
     xs0=hist_data0[1]

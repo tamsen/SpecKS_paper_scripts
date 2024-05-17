@@ -236,7 +236,7 @@ class AlloAutoPredictor(unittest.TestCase):
 
         spc_xs,metric,wgd_sims = read_xs_ys_csv(full_path1)
         low_N_sims= ["Auto","sim37_N0p1", "sim37_N1"]
-        med_N_sims=["sim37_N5", "sim35_log"]
+        med_N_sims=["sim37_N5"]# "sim35_log"]
         high_N_sims=["sim36_N10","sim37_N20"]
 
         truth_by_sim={}
