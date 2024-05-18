@@ -1,0 +1,9 @@
+
+ 
+ Note:
+ These config files were made for an early version of SpecKS (before May 2, 2024). If these config files are to be re-run as input to a later version of SpecKS (1.3 or above), they have to be modified so the <gene_div_time_distribution_parameters> is pulled into the  "<polyploid>" section.
+ 
+ Details: After May 2nd, the "<gene_div_time_distribution_parameters>" tag moved from the " <GeneTree>" section of the config to the "<polyploid>" in order to allow different polyploids in the sim to have different div_time_distribution_parameters. See version.py in SpecKS for details.
+ 
+ 
+simulation batch_names = ["sim37_N0p1","sim37_N1","sim37_N5","sim36_N10","sim37_N20"]
