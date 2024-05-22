@@ -12,7 +12,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_coffee_histogram(self):
 
-        coffee_num=20#coffee_num=17
+        coffee_num=25#coffee_num=17
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim42_coffee/Allo_Coffea{0}".format(coffee_num)
