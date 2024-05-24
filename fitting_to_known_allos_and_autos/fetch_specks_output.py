@@ -11,8 +11,8 @@ class MyTestDownloaderForFits(unittest.TestCase):
 
     def test_download_mesx_results(self):
 
-        polyploid_names = ['Allo27_Maize','Allo28_Maize']
-        batch_folders = ["sim42_Maize","sim42_Maize"]
+        polyploid_names = ['Allo34_Maize']
+        batch_folders = ["sim42_Maize"]
 
         #polyploid_names = ['Allo_Coffea23','Allo_Poplar23','Allo20_Maize']
         #polyploid_names = ['Allo_Coffea24','Allo_Poplar24','Allo21_Maize']

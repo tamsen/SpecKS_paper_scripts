@@ -62,7 +62,7 @@ class MyTestCase(unittest.TestCase):
                              species_run_name, species_for_plot_title, specks_full_path)
     def test_maize_histogram(self):
 
-        maize_num="28"
+        maize_num="34"
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim42_Maize/Allo{0}_Maize".format(maize_num)
