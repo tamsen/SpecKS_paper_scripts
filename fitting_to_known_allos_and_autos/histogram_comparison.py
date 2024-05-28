@@ -125,31 +125,31 @@ class MyTestCase(unittest.TestCase):
         make_both_histograms(bin_size, color, hist_comparison_out_folder, WGD_ks,max_Ks, density,real_ks_results,
                                   species_run_name, specks_ks_results)
 
-    def hist_by_type_of_paralog(bin_size, color, density, max_Ks, species_run_name, specks_full_path,
-                                specks_out_folder, wgd_ks):
-        ks_by_paralog_type = ks_parsers.read_Ks_csv_by_dup_type(specks_full_path)
-        out_png4 = os.path.join(specks_out_folder, "specks_" + species_run_name + "_layered.png")
-        fig = plt.figure(figsize=(10, 10), dpi=100)
-        [n_WGD, bins] = make_simple_histogram(ks_by_paralog_type['WGD'], species_run_name, bin_size,
-                                              color, wgd_ks,
-                                              max_Ks, density, out_png4)
-        n_WGD_SSD, bins, patches = plt.hist(ks_by_paralog_type['WGD'], bins=bins,
-                                            facecolor='blue', alpha=0.5,
-                                            label="WGD-WGD")
-        n_WGD_SSD, bins, patches = plt.hist(ks_by_paralog_type['WGD-SSD'], bins=bins,
-                                            facecolor='green', alpha=0.5,
-                                            label="WGD-SSD")
-        n_SSD_SSD, bins, patches = plt.hist(ks_by_paralog_type['SSD-SSD'], bins=bins,
-                                            facecolor='yellow', alpha=0.5,
-                                            label="SSD-SSD")
-        # fig = plt.figure(figsize=(10, 10), dpi=100)
-        plt.legend()
-        plt.xlabel("Ks")
-        plt.ylabel("Count in Bin")
-        plt.title("Ks histogram for {0}.".format(species_run_name))
-        plt.savefig(out_png4)
-        plt.clf()
-        plt.close()
+def hist_by_type_of_paralog(bin_size, color, density, max_Ks, species_run_name, specks_full_path,
+                            specks_out_folder, wgd_ks):
+    ks_by_paralog_type = ks_parsers.read_Ks_csv_by_dup_type(specks_full_path)
+    out_png4 = os.path.join(specks_out_folder, "specks_" + species_run_name + "_layered.png")
+    fig = plt.figure(figsize=(10, 10), dpi=100)
+    [n_WGD, bins] = make_simple_histogram(ks_by_paralog_type['WGD'], species_run_name, bin_size,
+                                          color, wgd_ks,
+                                          max_Ks, density, out_png4)
+    n_WGD_SSD, bins, patches = plt.hist(ks_by_paralog_type['WGD'], bins=bins,
+                                        facecolor='blue', alpha=0.5,
+                                        label="WGD-WGD")
+    n_WGD_SSD, bins, patches = plt.hist(ks_by_paralog_type['WGD-SSD'], bins=bins,
+                                        facecolor='green', alpha=0.5,
+                                        label="WGD-SSD")
+    n_SSD_SSD, bins, patches = plt.hist(ks_by_paralog_type['SSD-SSD'], bins=bins,
+                                        facecolor='yellow', alpha=0.5,
+                                        label="SSD-SSD")
+    # fig = plt.figure(figsize=(10, 10), dpi=100)
+    plt.legend()
+    plt.xlabel("Ks")
+    plt.ylabel("Count in Bin")
+    plt.title("Ks histogram for {0}.".format(species_run_name))
+    plt.savefig(out_png4)
+    plt.clf()
+    plt.close()
 def make_both_histograms(bin_size, color, hist_comparison_out_folder, WGD_ks, max_Ks, density, real_full_path,
                          species_run_name, species_for_plot_title, specks_full_path):
 
