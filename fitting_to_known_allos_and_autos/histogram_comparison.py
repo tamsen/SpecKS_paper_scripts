@@ -2,10 +2,10 @@ import math
 import os
 import unittest
 import numpy as np
-import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 import config
+import ks_parsers
 from results_viewer import batch_histogrammer, curve_fitting
 
 class MyTestCase(unittest.TestCase):
@@ -83,6 +83,10 @@ class MyTestCase(unittest.TestCase):
         make_both_histograms(bin_size, color,  specks_out_folder, wgd_ks,
                          max_Ks, density, real_full_path,
                          species_run_name, species_for_plot_title, specks_full_path)
+
+        hist_by_type_of_paralog(bin_size, color, density, max_Ks, species_run_name, specks_full_path,
+                                     specks_out_folder, wgd_ks)
+
     def test_Single_histogram(self):
 
         hist_comparison_out_folder = "/home/tamsen/Data/SpecKS_output/hist_comparison"
@@ -110,7 +114,7 @@ class MyTestCase(unittest.TestCase):
         real_full_path=os.path.join(ksrates_out_folder,ksrates_csv_file)
 
         specks_ks_results = batch_histogrammer.read_Ks_csv(specks_full_path)
-        real_ks_results = parse_external_ksfile(real_full_path)
+        real_ks_results = ks_parsers.parse_external_ksfile(real_full_path)
 
         bin_size=0.002
         max_Ks=0.3
@@ -121,11 +125,36 @@ class MyTestCase(unittest.TestCase):
         make_both_histograms(bin_size, color, hist_comparison_out_folder, WGD_ks,max_Ks, density,real_ks_results,
                                   species_run_name, specks_ks_results)
 
+    def hist_by_type_of_paralog(bin_size, color, density, max_Ks, species_run_name, specks_full_path,
+                                specks_out_folder, wgd_ks):
+        ks_by_paralog_type = ks_parsers.read_Ks_csv_by_dup_type(specks_full_path)
+        out_png4 = os.path.join(specks_out_folder, "specks_" + species_run_name + "_layered.png")
+        fig = plt.figure(figsize=(10, 10), dpi=100)
+        [n_WGD, bins] = make_simple_histogram(ks_by_paralog_type['WGD'], species_run_name, bin_size,
+                                              color, wgd_ks,
+                                              max_Ks, density, out_png4)
+        n_WGD_SSD, bins, patches = plt.hist(ks_by_paralog_type['WGD'], bins=bins,
+                                            facecolor='blue', alpha=0.5,
+                                            label="WGD-WGD")
+        n_WGD_SSD, bins, patches = plt.hist(ks_by_paralog_type['WGD-SSD'], bins=bins,
+                                            facecolor='green', alpha=0.5,
+                                            label="WGD-SSD")
+        n_SSD_SSD, bins, patches = plt.hist(ks_by_paralog_type['SSD-SSD'], bins=bins,
+                                            facecolor='yellow', alpha=0.5,
+                                            label="SSD-SSD")
+        # fig = plt.figure(figsize=(10, 10), dpi=100)
+        plt.legend()
+        plt.xlabel("Ks")
+        plt.ylabel("Count in Bin")
+        plt.title("Ks histogram for {0}.".format(species_run_name))
+        plt.savefig(out_png4)
+        plt.clf()
+        plt.close()
 def make_both_histograms(bin_size, color, hist_comparison_out_folder, WGD_ks, max_Ks, density, real_full_path,
                          species_run_name, species_for_plot_title, specks_full_path):
 
     specks_ks_results = batch_histogrammer.read_Ks_csv(specks_full_path)
-    real_ks_results = parse_external_ksfile(real_full_path)
+    real_ks_results = ks_parsers.parse_external_ksfile(real_full_path)
 
     if not os.path.exists(hist_comparison_out_folder):
         os.makedirs(hist_comparison_out_folder)
@@ -291,21 +320,5 @@ def get_Ks_at_max(WGD_ks, bar_plot_xs, n, sub_bins):
     return x_value_of_ymax
 
 
-def parse_external_ksfile(ks_file):
-
-    if ".fa" in ks_file: #1KP file
-        olea_ks_df = pd.read_csv(ks_file, sep='\t', header=0)
-        olea_ks_array = olea_ks_df.loc[:, "Node Ks"]
-        ks_data = [k for k in olea_ks_array.tolist() if k <= 2]
-    else:    #KS rates input file
-        ks_data = parse_ks_rates(ks_file)
-    return ks_data
-
-def parse_ks_rates(input_file):
-    ks_df=pd.read_csv(input_file, sep='\t', header=0)
-    ks_array = ks_df.loc[:,"Ks"]
-    ks_list = [k for k in ks_array.tolist() if k <= 2]
-    #print(ks_list[1:10])
-    return ks_list
 if __name__ == '__main__':
     unittest.main()
