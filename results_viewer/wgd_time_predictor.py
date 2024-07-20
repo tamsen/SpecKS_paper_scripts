@@ -12,116 +12,14 @@ from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 
-import config
+import two_d_colors
 from results_viewer import curve_fitting
 from results_viewer.batch_histogrammer import get_truth_from_name_list
 
 
-class AlloAutoPredictor(unittest.TestCase):
-    def test_spec_time_predictor(self):
+class WGDPredictor(unittest.TestCase):
 
-        out_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
-        file1="mode_vs_spec_time.csv"
-        full_path=os.path.join(out_folder,file1)
-        spec_xs,mode_ys, sims = read_xs_ys_csv(full_path)
-
-        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-        colors=['b' if "Allo" in s else 'r' for s in sims]
-        colors=['k' for s in sims]
-        plt.scatter(mode_ys, spec_xs, c=colors,label="empirical data",alpha=0.25)
-
-        fit_spec_times, xs, goodness_of_fit=curve_fitting.fit_curve_to_xs_and_ys(
-            mode_ys, spec_xs, curve_fitting.linear)
-
-        linear_fit_popt=goodness_of_fit.popt
-        ax.set(xlabel="mode (Ks space)")
-        ax.set(ylabel="input SPC (MYA)")
-        #rms2 = mean_squared_error(xs,fit_spec_times, squared=False)
-        parameter_string=[str(round(p,2)) for p in linear_fit_popt]
-        r = scipy.stats.pearsonr(xs,fit_spec_times)
-        print(r)
-        plt.plot(xs,fit_spec_times, c='k',label="line fit (model)"
-                                                              +"\nparameters: "+str(parameter_string)
-                                                              + "\nresidual: " + str(round(r[0],2)))
-
-
-        #example_modes=np.arange(0.2, 1.0, 0.2)
-        #predicted_spec_times= [curve_fitting.linear(x, *linear_fit_popt) for x in example_modes]
-        #plt.bar(example_modes,predicted_spec_times, width=0.002, color='pink',label="model input (mode)")
-        #plt.scatter(example_modes,predicted_spec_times, c='r',label="model output (est. spec time)")
-        #print("linear_fit_popt:\t" + str(linear_fit_popt))
-
-        plot_file=full_path.replace(".csv",".new.png")
-        plt.legend()
-        plt.savefig(plot_file)
-        plt.close()
-
-    def test_wgd_time_predictor(self):
-
-        out_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
-        file1="genes_remaining_vs_wgd_time.csv"
-        full_path=os.path.join(out_folder,file1)
-
-        wgd_xs,genes_remaining,sims = read_xs_ys_csv(full_path)
-        popt, pcov = curve_fit(curve_fitting.logfit, genes_remaining, wgd_xs)
-
-        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-        plt.scatter(genes_remaining, wgd_xs, c='k',label="empirical data",alpha=0.25)
-        genes_remaining.sort()
-        parameter_string=[str(round(p,2)) for p in popt]
-        fit_wgd_times = [curve_fitting.logfit(x, *popt) for x in genes_remaining]
-        plt.plot(genes_remaining, fit_wgd_times, c='k', label="log fit (model)\n"
-                                                              +"parameters: " +str(parameter_string))
-        print("logfit_fit_popt:\t" + str(popt))
-
-        #example_genes_remaining=np.arange(500, 3000, 500)
-        #predicted_wgd_times= [curve_fitting.logfit(x, *popt) for x in example_genes_remaining]
-        #plt.bar(example_genes_remaining,predicted_wgd_times, width=10, color='pink',label="model input (# genes)")
-        #plt.scatter(example_genes_remaining,predicted_wgd_times, c='r',label="model output (est. wgd time)")
-
-        ax.set(xlabel="# genes remaining")
-        ax.set(ylabel="input WGD (MYA)")
-        plt.legend()
-        plot_file=full_path.replace(".csv",".new.png").replace("shed","remaining")
-
-        plt.savefig(plot_file)
-        plt.close()
-
-    def test_log_wgd_time_predictor(self):
-
-        out_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
-        file1 = "genes_remaining_vs_wgd_time.csv"
-        full_path = os.path.join(out_folder, file1)
-
-        wgd_xs, genes_remaining, sims = read_xs_ys_csv(full_path)
-        log_genes_remaining=[math.log(g) for g in genes_remaining]
-        popt, pcov = curve_fit(curve_fitting.linear,log_genes_remaining, wgd_xs)
-
-        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-        plt.scatter(log_genes_remaining, wgd_xs, c='k', label="empirical data",alpha=0.25)
-        genes_remaining.sort()
-        parameter_string = [str(round(p, 2)) for p in popt]
-        fit_wgd_times = [curve_fitting.linear(x, *popt) for x in log_genes_remaining]
-        r = scipy.stats.pearsonr(wgd_xs,fit_wgd_times)
-        plt.plot(log_genes_remaining, fit_wgd_times, c='k', label="log fit (model)\n"
-                                                              + "parameters: " + str(parameter_string)
-                                                                  + "\nresidual: " + str(round(r[0], 2)))
-        print("logfit_fit_popt:\t" + str(popt))
-
-        # example_genes_remaining=np.arange(500, 3000, 500)
-        # predicted_wgd_times= [curve_fitting.logfit(x, *popt) for x in example_genes_remaining]
-        # plt.bar(example_genes_remaining,predicted_wgd_times, width=10, color='pink',label="model input (# genes)")
-        # plt.scatter(example_genes_remaining,predicted_wgd_times, c='r',label="model output (est. wgd time)")
-
-        ax.set(xlabel="ln( # genes remaining)")
-        ax.set(ylabel="input WGD (MYA)")
-        plt.legend()
-        plot_file = full_path.replace(".csv", ".new.log.png").replace("shed", "remaining")
-
-        plt.savefig(plot_file)
-        plt.close()
-
-    def test_auto_vs_allo_predictor(self):
+    def test_wgd2_predictor(self):
 
         out_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
         file1 = "genes_remaining_vs_wgd_time.csv"
@@ -206,7 +104,7 @@ class AlloAutoPredictor(unittest.TestCase):
             plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_data_points, out_folder,
                              sims_names_list, test_i, tests)
 
-            metric_name = "allopolyploid_index"
+            metric_name = "degree of allopolyploidy (true ΔT)" #allopolyploid_index"
             metric = [allo_vs_auto_truth_by_sim[s][2] for s in sims_names_list]
             plot_error_vs_metric(errors_for_test, metric, metric_name,
                                  sims_names_list, test_i, tests, out_folder)
@@ -299,6 +197,9 @@ class AlloAutoPredictor(unittest.TestCase):
         plt.savefig(plot_file)
         plt.close()
 
+        plot_confusion(accuracy_by_sim, colors_by_category, high_n_mean, low_n_mean, low_vs_medium_discrimination,
+                            med_n_mean, medium_vs_high_discrimination, out_folder)
+
         make_box_plots(colors_by_category, metrics_by_category, out_folder)
 
         #data_file = os.path.join(out_folder,"highN_vs_lowN_truth_and_predictions.csv")
@@ -307,7 +208,8 @@ class AlloAutoPredictor(unittest.TestCase):
 
 def plot_error_vs_metric(error, metric, metric_name,
                      sims_names_list, test_i, tests, out_folder):
-    colors = [config.auto_color if "Auto" in s else config.allo_color for s in sims_names_list]
+    print(sims_names_list)
+    colors = [two_d_colors.get_color_from_dT(s) for s in sims_names_list]
     ci_percent=99.99
     alphas = [0.25 if "Auto" in s else 0.25 for s in sims_names_list]
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
@@ -320,11 +222,6 @@ def plot_error_vs_metric(error, metric, metric_name,
     sns.regplot(data=foo, x='metric', y='error', color='k',ci=ci_percent,marker=None,scatter=False,
                 label="CI at {0}%\n(all data)".format(ci_percent),
                 line_kws={"linewidth":1})
-
-    #if test_i == 2:
-    #    ax.set(xlabel="<--auto    truth (MY)   allo-->")
-    #    ax.set(ylabel="<--auto  prediction (MY) allo-->")
-    #    ax.set(title="Predictions of polyploid index (SPEC - WGD time, in MY)")
 
     #else:
     ax.set(xlabel=metric_name)
@@ -340,6 +237,8 @@ def plot_data_and_CI_for_mode_prediction(ava_predictions_allo, ava_truth_allo,
                                          ava_predictions_auto, ava_truth_auto,out_folder,
                                         sims_names_list, test_i, tests):
 
+    #TODO, fix
+    return
     ci_percent=99.99#60#99.99
     ci_shading_auto = ["CI at {0}% (auto only)".format(ci_percent) for s in sims_names_list if "Auto" in s]
     ci_shading_allo = ["CI at {0}% (allo only)".format(ci_percent) for s in sims_names_list if "Allo" in s]
@@ -386,25 +285,47 @@ def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_
                      sims_names_list, test_i, tests):
     #colors = ["red" if "Auto" in s else "blue" for s in sims_names_list]
     ci_percent=99.99
-    colors = [config.auto_color if "Auto" in s else config.allo_color for s in sims_names_list]
+
+
+
+    #colors = [config.low_Ne_low_dT_color if "Auto" in s else config.allo_color for s in sims_names_list]
+    dt_colors = [two_d_colors.get_color_from_dT(s) for s in sims_names_list]
+    ne_colors = [two_d_colors.get_color_from_Ne(s) for s in sims_names_list]
+    Ne_alphas = [two_d_colors.get_alpha_from_Ne(s) for s in sims_names_list]
+    dT_alphas = [two_d_colors.get_alpha_from_dT(s) for s in sims_names_list]
+    colors = [two_d_colors.get_color_from_name(s) for s in sims_names_list]
+    dTs=[two_d_colors.get_dT_from_name(s) for s in sims_names_list]
+    print("dts:" + str(dTs))
+    dNs=[two_d_colors.get_Ne_from_name(s) for s in sims_names_list]
+    print("dNs:" + str(dNs))
     ci_shading = ["CI at {0}% (auto and allo)".format(ci_percent) for s in sims_names_list]
-    alphas = [1 if "Auto" in s else 0.5 for s in sims_names_list]
+    #alphas = [1 if "Auto" in s else 0.5 for s in sims_names_list]
+
     fig, ax = plt.subplots(1, 1, figsize=(5,5))
-    auto_labeled=False; allo_labeled=False
+    dT_labeled=False; Ne_labeled=False
 
     for i in range(0,len(ava_truth)):
-        color=colors[i]
-        if color==config.auto_color and not auto_labeled:
-                plt.scatter(ava_truth[i], ava_predictions[i], alpha=alphas[i],
-                            c=color, label="auto")
-                auto_labeled=True
-        elif color==config.allo_color and not allo_labeled:
-                plt.scatter(ava_truth[i], ava_predictions[i], alpha=alphas[i],
-                            c=color, label="allo")
-                allo_labeled=True
+
+        #plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.8,
+        #            facecolors='none',edgecolors =ne_colors[i],s=100)
+
+        if not dT_labeled:
+            plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+                            c=dt_colors[i], s=100, label="ΔT")
+            dT_labeled = True
         else:
-            plt.scatter(ava_truth[i], ava_predictions[i], alpha=alphas[i],
-                c=color)
+            plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+                            c=dt_colors[i], s=50)
+
+    #for i in range(0,len(ava_truth)):
+
+    #    if not Ne_labeled:
+    #        plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+    #                c=ne_colors[i], s=10, marker="X", label=''r'$\pi$')
+    #        Ne_labeled = True
+    #    else:
+    #        plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+    #            c=ne_colors[i], s=10, marker="X")
 
     foo = pd.DataFrame({'truth': ava_truth, 'prediction': ava_predictions, 'CI': ci_shading})
     #sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=['k'],errorbar=('ci', ci_percent) )
@@ -413,13 +334,16 @@ def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_
                 line_kws={"linewidth":1})
 
     if test_i == 2:
-        ax.set(xlabel="<--auto    truth (MY)   allo-->")
-        ax.set(ylabel="<--auto  prediction (MY) allo-->")
-        ax.set(title="Predictions of polyploid index (ΔT), in MY)")
+        ax.set(xlabel="<-- true ΔT -->")
+        ax.set(ylabel="<-- predicted ΔT (MY) -->")
+        ax.set(title="Predictions of polyploid index (ΔT, in MY)")
 
-        ax.axhline(y=discrim_criteria_midpoint, color='r', linestyle='--', label="discimination criteria"
+        ax.axhline(y=discrim_criteria_midpoint, color='gray', linestyle='--', label="disc. criteria"
                                                                                  + " (y={0})".format(
             round(discrim_criteria_midpoint, 2)))
+
+        ax.axhline(y=30, color='gray', linestyle='--', label="disc. criteria"
+                                                                                 + " (y=TODO)")
     else:
         ax.set(xlabel="truth (MY)")
         ax.set(ylabel="prediction (MY)")
@@ -430,6 +354,48 @@ def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_
     return plot_file
 
     #https://stackoverflow.com/questions/25009284/how-to-plot-roc-curve-in-python
+def plot_confusion(accuracy_by_sim, colors_by_category, high_n_mean, low_n_mean, low_vs_medium_discrimination,
+                   med_n_mean, medium_vs_high_discrimination, out_folder):
+    means_by_category = {"Low": low_n_mean, "Medium": med_n_mean, "High": high_n_mean}
+    stutter = 0.5
+    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    ax.add_patch(Rectangle((0, 0), low_vs_medium_discrimination, 1, color='gray', alpha=0.15))
+    ax.add_patch(Rectangle((0, 0), 1, low_vs_medium_discrimination, color='gray', alpha=0.15))
+    ax.add_patch(Rectangle((low_vs_medium_discrimination, 0),
+                           medium_vs_high_discrimination - low_vs_medium_discrimination, 1,
+                           color='cyan', alpha=0.15))
+    ax.add_patch(Rectangle((0, low_vs_medium_discrimination),
+                           1, medium_vs_high_discrimination - low_vs_medium_discrimination,
+                           color='cyan', alpha=0.15))
+    ax.add_patch(Rectangle((medium_vs_high_discrimination, 0),
+                           1 - medium_vs_high_discrimination, 1,
+                           color='blue', alpha=0.15))
+    ax.add_patch(Rectangle((0, medium_vs_high_discrimination),
+                           1, 1 - medium_vs_high_discrimination,
+                           color='blue', alpha=0.15))
+    for sim, results in accuracy_by_sim.items():
+        [true_category, predicted_category] = accuracy_by_sim[sim]
+        x_value = means_by_category[true_category] * (1 + stutter * random.random())
+        y_value = means_by_category[predicted_category] * (1 + stutter * random.random())
+
+        plt.scatter(x_value, y_value, alpha=0.25,
+                    c=colors_by_category[true_category])
+    ax.axvline(x=low_vs_medium_discrimination, color='cyan', linestyle='--', label="lvm disc. criteria"
+                                                                                   + " ({0})".format(
+        round(low_vs_medium_discrimination, 2)))
+    # ax.add_patch(Rectangle((0, 0), low_vs_medium_discrimination, 1), color='cyan')
+    ax.axvline(x=medium_vs_high_discrimination, color='purple', linestyle='--', label="mvh disc. criteria"
+                                                                                      + " ({0})".format(
+        round(medium_vs_high_discrimination, 2)))
+    ax.set(xlabel="<-- truth -->")
+    ax.set(ylabel="<-- prediction -->")
+    ax.set(xscale='log')
+    ax.set(yscale='log')
+    plt.legend()
+    plot_file = os.path.join(out_folder, "highN_vs_lowN_accuracy.png")
+    plt.savefig(plot_file)
+    plt.close()
+
 
 def predict_category(low_vs_medium_discrimination, medium_vs_high_discrimination, metric):
     if metric < low_vs_medium_discrimination:

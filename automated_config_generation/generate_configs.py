@@ -13,7 +13,9 @@ class Generate_Config_Files(unittest.TestCase):
     def test_making_configs(self):
 
 
-        sim_subfolder="sim40_1p0" #folder to make, to put put the shell scrips & qsub output
+        #sim_subfolder="sim40_1p0" #folder to make, to put put the shell scrips & qsub output
+        #sim_subfolder = "sim50_offdiags"
+        sim_subfolder = "sim60_deltat"
         me_at_remote_URL='tdunn@mesx.sdsu.edu'
         template_xml_file="mesx-template.xml"
         template_sh_file="qsub-template.sh"
@@ -34,14 +36,15 @@ class Generate_Config_Files(unittest.TestCase):
 
         #for fig 1 - 4
         #spec_times= [80,70, 60, 50, 40, 30, 20,10]
-        #wgd_offsets=[0,5,10,20,50]
-        #full_sim_time  = 100
+        spec_times= [40]
+        wgd_offsets=[0,1,5,10,20,30,40]
+        full_sim_time  = str(100)
         #all distributions
 
         #for fig 5.
-        spec_times= [1,2,3,4,5,7,10,15]
-        wgd_offsets=[0,1]
-        full_sim_time=str(50)
+        #spec_times= [1,2,3,4,5,7,10,15]
+        #wgd_offsets=[0,1]
+        #full_sim_time=str(50)
         #dist N=5
 
         imp_distribution = "impulse,1,1"
@@ -52,7 +55,8 @@ class Generate_Config_Files(unittest.TestCase):
         expon_10p0 = "expon,0,10"
         expon_20p0 = "expon,0,20"
         expon_100p0 = "expon,0,100"
-        coalescent_distribution=expon_1p0
+
+        #coalescent_distribution_1=expon_5p0
 
         poly_params_by_name={}
         out_folder_by_name={}
@@ -63,10 +67,12 @@ class Generate_Config_Files(unittest.TestCase):
             job_str=str(i+1)
             for wgd_offset in wgd_offsets:
 
-                if wgd_offset==0:
-                    job_type = "Auto"
-                else:
-                    job_type = "Allo"
+                #if wgd_offset==0:
+                #    job_type = "Auto"
+                #else:
+                #    job_type = "Allo"
+
+                job_type = "Allo"
 
                 spec_time = spec_times[i]
                 wgd_time = spec_time-wgd_offset
@@ -75,13 +81,13 @@ class Generate_Config_Files(unittest.TestCase):
                 #    continue
 
                 job_name = job_type + job_str + "_S" + formatter.format(spec_time) + "W" + formatter.format(wgd_time)
-                distribution_params=[]
                 job_params = PolyploidParams(spec_time, wgd_time,job_name)
                 poly_params_by_name[job_name] = job_params
                 out_folder_by_name[job_name] = os.path.join(specks_output_path_on_mesx, "specks_" + job_name)
 
         for poly_name,poly_params in poly_params_by_name.items():
 
+            coalescent_distribution= expon_1p0
             new_xml_file_name = poly_name + ".xml"
             xml_replacements=[("POLYPLOID_SECTION",poly_params.to_xml()),
                               ("OUTPUT_ROOT", out_folder_by_name[poly_name]),

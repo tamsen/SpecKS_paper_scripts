@@ -29,7 +29,7 @@ echo "activating my env"
 conda activate specks_test
 cd $PBS_O_WORKDIR
 
-specks_py=/home/tdunn/git/SpecKS/SpecKS/main.py
+specks_py=/home/tdunn/git/SpecKS/SpecKS/SpecKS.py
 config=CONFIGPATH
 
 echo python3 $specks_py $config

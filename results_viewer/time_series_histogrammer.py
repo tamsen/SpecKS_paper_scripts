@@ -114,7 +114,7 @@ def make_time_series_histogram_subplot(this_ax, alpha, Ks_results, bin_size, par
     trimmed_bins=bins[0:len(n)]
     smoothed_ys = smooth_data(kernel_size, n)
     this_ax.plot(trimmed_bins,smoothed_ys,color=plot_color,
-                 label='SPC/WGD time: {0}/{1} MYA'.format(params.SPC_time_MYA, params.WGD_time_MYA)                 )
+                 label='DIV/WGD time: {0}/{1} MYA'.format(params.SPC_time_MYA, params.WGD_time_MYA)                 )
     hist_result=[n, bins]
     hist_maximum=max(n)
     ymax_suggestion=hist_maximum*1.6
