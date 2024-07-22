@@ -11,7 +11,7 @@ class TimeSeriesHistogrammer(unittest.TestCase):
 
     def test_make_time_series_histograms_for_batch(self):
 
-        batch_name="sim38_test" ##"sim37_N20" #sim37_N0p1,sim37_N5
+        batch_name="sim50_offdiags" ##"sim37_N20" #sim37_N0p1,sim37_N5
         plot_title=("Time series for sim N5")
 
         input_folder=os.path.join( "/home/tamsen/Data/Specks_outout_from_mesx",batch_name)

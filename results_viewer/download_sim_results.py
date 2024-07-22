@@ -8,7 +8,7 @@ class MyTestDownloader(unittest.TestCase):
 
     def test_download_mesx_results(self):
 
-        batch_folder = "sim40_10p0"#,sim40_1p0,sim40_5p0,sim40_10p0" #"sim37_N20" #sim37_N0p1,sim37_N5
+        batch_folder = "sim60_deltat" #,sim40_1p0,sim40_5p0,sim40_10p0" #"sim37_N20" #sim37_N0p1,sim37_N5
         me_at_remote_URL = 'tdunn@mesx.sdsu.edu'
         local_output_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
         remote_output_folder = "/usr/scratch2/userdata2/tdunn/SpecKS_Output"
@@ -20,7 +20,7 @@ class MyTestDownloader(unittest.TestCase):
 
         run_folders= get_subdirectories(local_output_folder, me_at_remote_URL,
                                              remote_batch_folder, "sp*")
-        run_folder_by_polyploid_name = self.get_run_folders_by_polyploid_name(run_folders)
+        run_folder_by_polyploid_name = get_run_folders_by_polyploid_name(run_folders)
 
 
         polyploid_folders_by_name={}
