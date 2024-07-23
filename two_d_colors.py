@@ -15,6 +15,12 @@ class two_d_colors:
     high_Ne=color_blind_friendly_color_cycle_analogs['blue'] #alpha
     low_dT = color_blind_friendly_color_cycle_analogs['orange'] #light vs dark
 
+    high_Ne_high_dT=color_blind_friendly_color_cycle_analogs['blue']
+    low_Ne_low_dT = color_blind_friendly_color_cycle_analogs['orange']
+    high_Ne_low_dT = color_blind_friendly_color_cycle_analogs['brown']
+    low_Ne_high_dT = color_blind_friendly_color_cycle_analogs['gray']
+
+
     nice_blue=(0.21568627450980393, 0.49411764705882355, 0.7215686274509804)
     nice_orange= (1.0, 0.4980392156862745, 0.0)
 

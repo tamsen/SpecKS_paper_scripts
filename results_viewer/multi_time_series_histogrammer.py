@@ -3,15 +3,20 @@ import unittest
 import numpy as np
 from matplotlib import pyplot as plt
 import batch_histogrammer
-import two_d_colors, config
+import config
 from results_viewer.batch_analyzer import smooth_data
 
 
-class TimeSeriesHistogrammer(unittest.TestCase):
+class MultiTimeSeriesHistogrammer(unittest.TestCase):
 
-    def test_make_time_series_histograms_for_off_diagonals(self):
+    def test_make_time_series_histograms_for_batch(self):
 
         batch_name="sim53_offdiags" #
+        plot_title=("Time series for offdiagonals: low Ne,high dt and high Ne,low dT")
+
+        #batch_name="sim52_diagonals" ##"sim37_N20" #sim37_N0p1,sim37_N5
+        #plot_title=("Time series for diagonals: low Ne,dt and high Ne,dT")
+
         input_folder=os.path.join( "/home/tamsen/Data/Specks_outout_from_mesx",batch_name)
         output_folder=input_folder#os.path.join(input_folder,"analysis")
         if not os.path.exists(output_folder):
@@ -24,110 +29,66 @@ class TimeSeriesHistogrammer(unittest.TestCase):
 
         print("Making plots..")
         bin_size = 0.001
-        max_Ks = 0.85
-        max_Ys= [100]
+        max_Ks = 0.75
+        max_Ys= [250,250]
 
-        #off-diagonals
-
-        filter = "Allo"
-        colors=two_d_colors.two_d_colors.high_Ne_low_dT
-        plot_title=("High Ne, low  ΔT")
         for spec in ['polyploid']:#species:
             get_time_series_histograms_for_runs_in_batch(output_folder, plot_title,
                                                      csvfiles_by_polyploid_by_species_rep_by_algorithm, spec,
                                                      "rep0", alg, params_by_polyploid,
-                                                      max_Ys, max_Ks, bin_size,filter,colors)
-
-        filter = "Auto"
-        colors=two_d_colors.two_d_colors.low_Ne_high_dT
-        plot_title=("Low Ne, high  ΔT")
-        for spec in ['polyploid']:#species:
-            get_time_series_histograms_for_runs_in_batch(output_folder, plot_title,
-                                                     csvfiles_by_polyploid_by_species_rep_by_algorithm, spec,
-                                                     "rep0", alg, params_by_polyploid,
-                                                      max_Ys, max_Ks, bin_size,filter,colors)
-
-
-    def test_make_time_series_histograms_for_diagonals(self):
-
-        batch_name="sim52_diagonals" #
-        input_folder=os.path.join( "/home/tamsen/Data/Specks_outout_from_mesx",batch_name)
-        output_folder=input_folder#os.path.join(input_folder,"analysis")
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
-
-        print("Reading csv files..")
-        csvfiles_by_polyploid_by_species_rep_by_algorithm = batch_histogrammer.get_ks_data_from_folders(input_folder)
-        params_by_polyploid = batch_histogrammer.get_truth_from_name_dict(csvfiles_by_polyploid_by_species_rep_by_algorithm)
-        alg="ML"
-
-        print("Making plots..")
-        bin_size = 0.001
-        max_Ks = 0.85
-        max_Ys= [100]
-
-        #off-diagonals
-
-        filter = "Allo"
-        colors=two_d_colors.two_d_colors.high_Ne_high_dT
-        plot_title=("High Ne, high ΔT")
-        for spec in ['polyploid']:#species:
-            get_time_series_histograms_for_runs_in_batch(output_folder, plot_title,
-                                                     csvfiles_by_polyploid_by_species_rep_by_algorithm, spec,
-                                                     "rep0", alg, params_by_polyploid,
-                                                      max_Ys, max_Ks, bin_size,filter,colors)
-
-        filter = "Auto"
-        colors=two_d_colors.two_d_colors.low_Ne_low_dT
-        plot_title=("Low Ne, low ΔT")
-        for spec in ['polyploid']:#species:
-            get_time_series_histograms_for_runs_in_batch(output_folder, plot_title,
-                                                     csvfiles_by_polyploid_by_species_rep_by_algorithm, spec,
-                                                     "rep0", alg, params_by_polyploid,
-                                                      max_Ys, max_Ks, bin_size,filter,colors)
+                                                      max_Ys, max_Ks, bin_size)
 
 
 def get_time_series_histograms_for_runs_in_batch(out_folder, sample_name, csvfiles_by_polyploid_by_rep_by_algorthim,
                                      spec, replicate, alg, params_by_polyploid,max_Ys, max_Ks_for_x_axis,
-                                     bin_size,filter, base_color):
+                                     bin_size):
 
     result_names=(list(csvfiles_by_polyploid_by_rep_by_algorthim.keys()))
     result_names.sort()
-    ordered_results=[n for n in result_names if filter in n]
+    ordered_auto_results=[n for n in result_names if "Auto" in n]
+    ordered_allo_results=[n for n in result_names if "Allo" in n]
     metrics_by_result_names= {}
 
     # making subplots
-    spec_times= [params_by_polyploid[name].SPC_time_MYA for name in ordered_results]
-    num_spec_times=len(spec_times)
-    num_modes_of_speciation = 1#auto and allow
+    auto_spec_times= [params_by_polyploid[auto_name].SPC_time_MYA for auto_name in ordered_auto_results]
+    allo_spec_times= [params_by_polyploid[allo_name].SPC_time_MYA for allo_name in ordered_allo_results]
+    num_spec_times=max(len(auto_spec_times),len(allo_spec_times))
+    num_modes_of_speciation = 2 #auto and allow
 
-    fig, ax = plt.subplots(1, num_modes_of_speciation,figsize=(5,5))
+    fig, ax = plt.subplots(1, num_modes_of_speciation,figsize=(10,5))
     fig.suptitle(sample_name + " for " + replicate +", "+ alg + " algorithm")
-    #ax.set_title(filter+ "\n",fontsize=15)
+    ax[0].set_title("High Ne\n",fontsize=15)
+    ax[1].set_title("Low Ne\n",fontsize=15)
+    colors=[config.allo_color, config.auto_color]
     red_color_interval = 1.4 / num_spec_times
     blue_color_interval = 2 / num_spec_times
     for sim_idx in range(0, num_spec_times):
 
+        allo_group="Allo"+str(sim_idx+1)
+        ordered_allo_results=[n for n in result_names if allo_group in n]
+        ordered_allo_results.sort()
+        results_for_this_sim_index=ordered_allo_results + [ordered_auto_results[sim_idx]]
+
         for spec_mode_idx in range(0,num_modes_of_speciation):
 
             print(spec_mode_idx)
-            allo_result_name=ordered_results[sim_idx]
-
-            print(allo_result_name)
-
-            if ((base_color ==two_d_colors.two_d_colors.low_Ne_high_dT)
-                    or (base_color == two_d_colors.two_d_colors.low_Ne_low_dT)) :
+            allo_result_name=results_for_this_sim_index[spec_mode_idx]
+            if not allo_result_name:
+                continue
+            this_ax = ax[spec_mode_idx]
+            color = colors[spec_mode_idx]
+            if color==config.auto_color:
                 amount = 0.4 + sim_idx * red_color_interval
             else:
                 amount = 0.2 + sim_idx *blue_color_interval
 
-            new_color = lighten_color(base_color, amount=amount)
+            new_color = lighten_color(color, amount=amount)
 
             alpha = 1
             csvs_for_allo_result= csvfiles_by_polyploid_by_rep_by_algorthim[allo_result_name]
             ks_for_allo_result= csvs_for_allo_result[spec][replicate][alg]
             params=params_by_polyploid[allo_result_name]
-            hist_data=make_time_series_histogram_subplot(ax, alpha, ks_for_allo_result,
+            hist_data=make_time_series_histogram_subplot(this_ax, alpha, ks_for_allo_result,
                                                          bin_size, params,
                                                          max_Ks_for_x_axis,
                                                          max_Ys[spec_mode_idx],new_color )
@@ -136,12 +97,12 @@ def get_time_series_histograms_for_runs_in_batch(out_folder, sample_name, csvfil
             save_hist_to_csv(hist_data, out_file_name)
 
 
-            ax.set(xlabel="~MYA (Ks*{0})".format(config.SpecKS_config.Ks_per_Myr))
+            this_ax.set(xlabel="~MYA (Ks*{0})".format(config.SpecKS_config.Ks_per_Myr))
 
-    ax.set(ylabel=config.histogram_y_label)
+    ax[0].set(ylabel=config.histogram_y_label)
     plt.tight_layout()
     out_file_name=os.path.join(out_folder, "histogram" + "_plot_" + spec +
-                               "_" + filter + "_" + str(max_Ks_for_x_axis) + ".png")
+                               "_" + replicate + "_" + str(max_Ks_for_x_axis) + ".png")
     plt.savefig(out_file_name)
     plt.close()
     return metrics_by_result_names

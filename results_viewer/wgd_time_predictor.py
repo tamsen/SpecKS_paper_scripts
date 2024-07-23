@@ -12,6 +12,7 @@ from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 
+import config
 import two_d_colors
 from results_viewer import curve_fitting
 from results_viewer.batch_histogrammer import get_truth_from_name_list
@@ -237,15 +238,13 @@ def plot_data_and_CI_for_mode_prediction(ava_predictions_allo, ava_truth_allo,
                                          ava_predictions_auto, ava_truth_auto,out_folder,
                                         sims_names_list, test_i, tests):
 
-    #TODO, fix
-    return
     ci_percent=99.99#60#99.99
     ci_shading_auto = ["CI at {0}% (auto only)".format(ci_percent) for s in sims_names_list if "Auto" in s]
     ci_shading_allo = ["CI at {0}% (allo only)".format(ci_percent) for s in sims_names_list if "Allo" in s]
 
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
     plt.scatter(ava_truth_auto, ava_predictions_auto, alpha=1,
-                c=config.low_Ne_low_dT_color, label="auto")
+                c=config.auto_color, label="auto")
     plt.scatter(ava_truth_allo, ava_predictions_allo, alpha=0.5,
                 c=config.allo_color, label="allo")
 

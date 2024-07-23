@@ -45,8 +45,11 @@ def get_truth_from_name_list(names):
     params_by_polyploid = {}
     for name in names:
         print(name)
-        spec_time = int(name[7:10])
-        wgd_time = int(name[11:14])
+        splat_n=name.split("_")
+        len_first_part=len( splat_n[0])
+        print(len_first_part)
+        spec_time = int(name[len_first_part+2:len_first_part+5])
+        wgd_time = int(name[len_first_part+6:len_first_part+9])
         params_by_polyploid[name] = config.PolyploidParams(spec_time, wgd_time, name)
     return params_by_polyploid
 
