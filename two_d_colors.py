@@ -2,6 +2,9 @@
 import math
 import xml.etree.ElementTree as ET
 
+import matplotlib
+
+
 
 class two_d_colors:
 
@@ -49,6 +52,16 @@ class two_d_colors:
     #['Allo6_S030W010.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo4_S050W040.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo2_S070W020.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo2_S070W060.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo1_S080W060.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo3_S060W040.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo7_S020W015.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo1_S080W075.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo1_S080W030.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo2_S070W050.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo4_S050W045.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo7_S020W010.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo6_S030W025.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo5_S040W030.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo4_S050W030.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo3_S060W050.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo5_S040W020.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo1_S080W070.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo3_S060W010.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo5_S040W035.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo3_S060W055.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo8_S010W005.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo6_S030W020.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo2_S070W065.hist_Ks_hist_fit2.0_sim37_N0p1', 'Auto1_S080W080.hist_Ks_hist_fit2.0_sim37_N0p1', 'Auto2_S070W070.hist_Ks_hist_fit2.0_sim37_N0p1', 'Auto3_S060W060.hist_Ks_hist_fit2.0_sim37_N0p1', 'Auto8_S010W010.hist_Ks_hist_fit2.0_sim37_N0p1', 'Auto6_S030W030.hist_Ks_hist_fit2.0_sim37_N0p1', 'Auto4_S050W050.hist_Ks_hist_fit2.0_sim37_N0p1', 'Auto5_S040W040.hist_Ks_hist_fit2.0_sim37_N0p1', 'Auto7_S020W020.hist_Ks_hist_fit2.0_sim37_N0p1', 'Allo6_S030W010.hist_Ks_hist_fit2.0_sim37_N1', 'Allo4_S050W040.hist_Ks_hist_fit2.0_sim37_N1', 'Allo2_S070W020.hist_Ks_hist_fit2.0_sim37_N1', 'Allo2_S070W060.hist_Ks_hist_fit2.0_sim37_N1', 'Allo1_S080W060.hist_Ks_hist_fit2.0_sim37_N1', 'Allo3_S060W040.hist_Ks_hist_fit2.0_sim37_N1', 'Allo7_S020W015.hist_Ks_hist_fit2.0_sim37_N1', 'Allo1_S080W075.hist_Ks_hist_fit2.0_sim37_N1', 'Allo1_S080W030.hist_Ks_hist_fit2.0_sim37_N1', 'Allo2_S070W050.hist_Ks_hist_fit2.0_sim37_N1', 'Allo4_S050W045.hist_Ks_hist_fit2.0_sim37_N1', 'Allo7_S020W010.hist_Ks_hist_fit2.0_sim37_N1', 'Allo6_S030W025.hist_Ks_hist_fit2.0_sim37_N1', 'Allo5_S040W030.hist_Ks_hist_fit2.0_sim37_N1', 'Allo4_S050W030.hist_Ks_hist_fit2.0_sim37_N1', 'Allo3_S060W050.hist_Ks_hist_fit2.0_sim37_N1', 'Allo5_S040W020.hist_Ks_hist_fit2.0_sim37_N1', 'Allo1_S080W070.hist_Ks_hist_fit2.0_sim37_N1', 'Allo3_S060W010.hist_Ks_hist_fit2.0_sim37_N1', 'Allo5_S040W035.hist_Ks_hist_fit2.0_sim37_N1', 'Allo3_S060W055.hist_Ks_hist_fit2.0_sim37_N1', 'Allo8_S010W005.hist_Ks_hist_fit2.0_sim37_N1', 'Allo6_S030W020.hist_Ks_hist_fit2.0_sim37_N1', 'Allo2_S070W065.hist_Ks_hist_fit2.0_sim37_N1', 'Auto1_S080W080.hist_Ks_hist_fit2.0_sim37_N1', 'Auto2_S070W070.hist_Ks_hist_fit2.0_sim37_N1', 'Auto3_S060W060.hist_Ks_hist_fit2.0_sim37_N1', 'Auto8_S010W010.hist_Ks_hist_fit2.0_sim37_N1', 'Auto6_S030W030.hist_Ks_hist_fit2.0_sim37_N1', 'Auto4_S050W050.hist_Ks_hist_fit2.0_sim37_N1', 'Auto5_S040W040.hist_Ks_hist_fit2.0_sim37_N1', 'Auto7_S020W020.hist_Ks_hist_fit2.0_sim37_N1', 'Allo6_S030W010.hist_Ks_hist_fit2.0_sim37_N5', 'Allo4_S050W040.hist_Ks_hist_fit2.0_sim37_N5', 'Allo2_S070W020.hist_Ks_hist_fit2.0_sim37_N5', 'Allo2_S070W060.hist_Ks_hist_fit2.0_sim37_N5', 'Allo1_S080W060.hist_Ks_hist_fit2.0_sim37_N5', 'Allo3_S060W040.hist_Ks_hist_fit2.0_sim37_N5', 'Allo7_S020W015.hist_Ks_hist_fit2.0_sim37_N5', 'Allo1_S080W075.hist_Ks_hist_fit2.0_sim37_N5', 'Allo1_S080W030.hist_Ks_hist_fit2.0_sim37_N5', 'Allo2_S070W050.hist_Ks_hist_fit2.0_sim37_N5', 'Allo4_S050W045.hist_Ks_hist_fit2.0_sim37_N5', 'Allo7_S020W010.hist_Ks_hist_fit2.0_sim37_N5', 'Allo6_S030W025.hist_Ks_hist_fit2.0_sim37_N5', 'Allo5_S040W030.hist_Ks_hist_fit2.0_sim37_N5', 'Allo4_S050W030.hist_Ks_hist_fit2.0_sim37_N5', 'Allo3_S060W050.hist_Ks_hist_fit2.0_sim37_N5', 'Allo5_S040W020.hist_Ks_hist_fit2.0_sim37_N5', 'Allo1_S080W070.hist_Ks_hist_fit2.0_sim37_N5', 'Allo3_S060W010.hist_Ks_hist_fit2.0_sim37_N5', 'Allo5_S040W035.hist_Ks_hist_fit2.0_sim37_N5', 'Allo3_S060W055.hist_Ks_hist_fit2.0_sim37_N5', 'Allo8_S010W005.hist_Ks_hist_fit2.0_sim37_N5', 'Allo6_S030W020.hist_Ks_hist_fit2.0_sim37_N5', 'Allo2_S070W065.hist_Ks_hist_fit2.0_sim37_N5', 'Auto1_S080W080.hist_Ks_hist_fit2.0_sim37_N5', 'Auto2_S070W070.hist_Ks_hist_fit2.0_sim37_N5', 'Auto3_S060W060.hist_Ks_hist_fit2.0_sim37_N5', 'Auto8_S010W010.hist_Ks_hist_fit2.0_sim37_N5', 'Auto6_S030W030.hist_Ks_hist_fit2.0_sim37_N5', 'Auto4_S050W050.hist_Ks_hist_fit2.0_sim37_N5', 'Auto5_S040W040.hist_Ks_hist_fit2.0_sim37_N5', 'Auto7_S020W020.hist_Ks_hist_fit2.0_sim37_N5', 'Allo6_S030W010.hist_Ks_hist_fit2.0_sim36_N10', 'Allo4_S050W040.hist_Ks_hist_fit2.0_sim36_N10', 'Allo2_S070W020.hist_Ks_hist_fit2.0_sim36_N10', 'Allo2_S070W060.hist_Ks_hist_fit2.0_sim36_N10', 'Allo1_S080W060.hist_Ks_hist_fit2.0_sim36_N10', 'Allo3_S060W040.hist_Ks_hist_fit2.0_sim36_N10', 'Allo7_S020W015.hist_Ks_hist_fit2.0_sim36_N10', 'Allo1_S080W075.hist_Ks_hist_fit2.0_sim36_N10', 'Allo1_S080W030.hist_Ks_hist_fit2.0_sim36_N10', 'Allo2_S070W050.hist_Ks_hist_fit2.0_sim36_N10', 'Allo4_S050W045.hist_Ks_hist_fit2.0_sim36_N10', 'Allo7_S020W010.hist_Ks_hist_fit2.0_sim36_N10', 'Allo6_S030W025.hist_Ks_hist_fit2.0_sim36_N10', 'Allo5_S040W030.hist_Ks_hist_fit2.0_sim36_N10', 'Allo4_S050W030.hist_Ks_hist_fit2.0_sim36_N10', 'Allo3_S060W050.hist_Ks_hist_fit2.0_sim36_N10', 'Allo5_S040W020.hist_Ks_hist_fit2.0_sim36_N10', 'Allo1_S080W070.hist_Ks_hist_fit2.0_sim36_N10', 'Allo3_S060W010.hist_Ks_hist_fit2.0_sim36_N10', 'Allo5_S040W035.hist_Ks_hist_fit2.0_sim36_N10', 'Allo3_S060W055.hist_Ks_hist_fit2.0_sim36_N10', 'Allo8_S010W005.hist_Ks_hist_fit2.0_sim36_N10', 'Allo6_S030W020.hist_Ks_hist_fit2.0_sim36_N10', 'Allo2_S070W065.hist_Ks_hist_fit2.0_sim36_N10', 'Auto1_S080W080.hist_Ks_hist_fit2.0_sim36_N10', 'Auto2_S070W070.hist_Ks_hist_fit2.0_sim36_N10', 'Auto3_S060W060.hist_Ks_hist_fit2.0_sim36_N10', 'Auto8_S010W010.hist_Ks_hist_fit2.0_sim36_N10', 'Auto6_S030W030.hist_Ks_hist_fit2.0_sim36_N10', 'Auto4_S050W050.hist_Ks_hist_fit2.0_sim36_N10', 'Auto5_S040W040.hist_Ks_hist_fit2.0_sim36_N10', 'Auto7_S020W020.hist_Ks_hist_fit2.0_sim36_N10', 'Allo6_S030W010.hist_Ks_hist_fit2.0_sim37_N20', 'Allo4_S050W040.hist_Ks_hist_fit2.0_sim37_N20', 'Allo2_S070W020.hist_Ks_hist_fit2.0_sim37_N20', 'Allo2_S070W060.hist_Ks_hist_fit2.0_sim37_N20', 'Allo1_S080W060.hist_Ks_hist_fit2.0_sim37_N20', 'Allo3_S060W040.hist_Ks_hist_fit2.0_sim37_N20', 'Allo7_S020W015.hist_Ks_hist_fit2.0_sim37_N20', 'Allo1_S080W075.hist_Ks_hist_fit2.0_sim37_N20', 'Allo1_S080W030.hist_Ks_hist_fit2.0_sim37_N20', 'Allo2_S070W050.hist_Ks_hist_fit2.0_sim37_N20', 'Allo4_S050W045.hist_Ks_hist_fit2.0_sim37_N20', 'Allo7_S020W010.hist_Ks_hist_fit2.0_sim37_N20', 'Allo6_S030W025.hist_Ks_hist_fit2.0_sim37_N20', 'Allo5_S040W030.hist_Ks_hist_fit2.0_sim37_N20', 'Allo4_S050W030.hist_Ks_hist_fit2.0_sim37_N20', 'Allo3_S060W050.hist_Ks_hist_fit2.0_sim37_N20', 'Allo5_S040W020.hist_Ks_hist_fit2.0_sim37_N20', 'Allo1_S080W070.hist_Ks_hist_fit2.0_sim37_N20', 'Allo3_S060W010.hist_Ks_hist_fit2.0_sim37_N20', 'Allo5_S040W035.hist_Ks_hist_fit2.0_sim37_N20', 'Allo3_S060W055.hist_Ks_hist_fit2.0_sim37_N20', 'Allo8_S010W005.hist_Ks_hist_fit2.0_sim37_N20', 'Allo6_S030W020.hist_Ks_hist_fit2.0_sim37_N20', 'Allo2_S070W065.hist_Ks_hist_fit2.0_sim37_N20', 'Auto1_S080W080.hist_Ks_hist_fit2.0_sim37_N20', 'Auto2_S070W070.hist_Ks_hist_fit2.0_sim37_N20', 'Auto3_S060W060.hist_Ks_hist_fit2.0_sim37_N20', 'Auto8_S010W010.hist_Ks_hist_fit2.0_sim37_N20', 'Auto6_S030W030.hist_Ks_hist_fit2.0_sim37_N20', 'Auto4_S050W050.hist_Ks_hist_fit2.0_sim37_N20', 'Auto5_S040W040.hist_Ks_hist_fit2.0_sim37_N20', 'Auto7_S020W020.hist_Ks_hist_fit2.0_sim37_N20']"
 
 
+low_dt_limit=5
+medium_dt_limit=30
+
+class rgb_colors:
+    nice_high_ne = (0.21568627450980393, 0.49411764705882355, 0.7215686274509804)
+    nice_low_dt =(1.0, 0.4980392156862745, 0.0)
+    nice_tan = matplotlib.colors.to_rgb("tan")
+    nice_dkorange = matplotlib.colors.to_rgb("orange")
+    nice_ltblue = matplotlib.colors.to_rgb("lightblue")
+    nice_gray = matplotlib.colors.to_rgb("lightgray")
 def get_color_from_name(name):
 
     dT=get_dT_from_name(name)
@@ -82,16 +95,15 @@ def get_dT_from_name(name):
     print([SPC_decimal,WGD_decimal])
     return SPC_decimal - WGD_decimal
 
+
 def get_color_from_dT(name):
 
     dT=get_dT_from_name(name)
-    base_color=two_d_colors.low_dT
 
-    amount=1
-    if dT == 0:
-        return base_color
+    if dT < low_dt_limit :
+        return two_d_colors.low_dT
 
-    if dT > 30:
+    if dT > medium_dt_limit:
         return 'tan'
 
     return 'orange'
@@ -106,33 +118,33 @@ def get_color_from_Ne(name):
         final_color='lightblue'
 
     return final_color
-def get_alpha_from_Ne(name):
-
-    #Ne goes from 0.1 to 20 in out sims
-    Ne=get_Ne_from_name(name)
-    alpha=0.5
-    if Ne < 20:
-        alpha = 0.4
-    if Ne < 10:
-        alpha = 0.3
-    if Ne < 5:
-        alpha = 0.2
-
-    return alpha
-
-def get_alpha_from_dT(name):
-
-    #dT goes from 0 to 50
-    dT=get_dT_from_name(name)
-    alpha=0.5
-    if dT < 40:
-        alpha = 0.4
-    if dT < 20:
-        alpha = 0.3
-    if dT < 10:
-        alpha = 0.2
-
-    return alpha
+# def get_alpha_from_Ne(name):
+#
+#     #Ne goes from 0.1 to 20 in out sims
+#     Ne=get_Ne_from_name(name)
+#     alpha=0.5
+#     if Ne < 20:
+#         alpha = 0.4
+#     if Ne < 10:
+#         alpha = 0.3
+#     if Ne < 5:
+#         alpha = 0.2
+#
+#     return alpha
+#
+# def get_alpha_from_dT(name):
+#
+#     #dT goes from 0 to 50
+#     dT=get_dT_from_name(name)
+#     alpha=0.5
+#     if dT < 40:
+#         alpha = 0.4
+#     if dT < 20:
+#         alpha = 0.3
+#     if dT < 10:
+#         alpha = 0.2
+#
+#     return alpha
 
 
 

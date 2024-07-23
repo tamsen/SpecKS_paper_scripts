@@ -79,7 +79,7 @@ class WGDPredictor(unittest.TestCase):
         discrim_criteria_midpoint= 0.5 *(highest_predicted_index_for_true_autos + lowest_predicted_index_for_true_allos)
         print("midpoint:\n" + str(discrim_criteria_midpoint))
 
-        tests=["SPEC","WGD","allopolyploid_index"]
+        tests=["SPEC","WGD","degree of allopolyploidy (true ΔT)"]
 
         # convert the list of key-value pairs to a dictionary
         errors_by_test = {test: [] for test in tests}
@@ -119,12 +119,13 @@ class WGDPredictor(unittest.TestCase):
 
         tests=["mode vs WGD time"]
         errors=[mode_predictions[j]-wgd_truths[j] for j in range(0,len(mode_predictions))]
+
         plot_data_and_CI_for_mode_prediction(mode_predictions_allo_only,wgd_truths_allo_only,
                                              mode_predictions_auto_only, wgd_truths_auto_only,
                                  out_folder, sims_names_list, 0, tests)
 
         metric = [allo_vs_auto_truth_by_sim[s][2] for s in sims_names_list]
-        plot_error_vs_metric(errors, metric, "allopolyploid_index",
+        plot_error_vs_metric(errors, metric, "degree of allopolyploidy (true ΔT)",
                              sims_names_list, 0, tests, out_folder)
 
     def test_highN_vs_lowN_predictor(self):
@@ -214,6 +215,8 @@ def plot_error_vs_metric(error, metric, metric_name,
     ci_percent=99.99
     alphas = [0.25 if "Auto" in s else 0.25 for s in sims_names_list]
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+
+    #TODO - add legend..?
     plt.scatter( metric,error, alpha=alphas,
                 c=colors)
 
@@ -243,11 +246,36 @@ def plot_data_and_CI_for_mode_prediction(ava_predictions_allo, ava_truth_allo,
     ci_shading_allo = ["CI at {0}% (allo only)".format(ci_percent) for s in sims_names_list if "Allo" in s]
 
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    plt.scatter(ava_truth_auto, ava_predictions_auto, alpha=1,
-                c=config.auto_color, label="auto")
-    plt.scatter(ava_truth_allo, ava_predictions_allo, alpha=0.5,
-                c=config.allo_color, label="allo")
 
+    #TODO: get color based on delta T
+    dt_colors_auto = [two_d_colors.get_color_from_dT(s) for s in sims_names_list if "Auto" in s]
+    dt_colors_allo = [two_d_colors.get_color_from_dT(s) for s in sims_names_list if "Allo" in s]
+    have_tan_label=False
+    have_orange_label=False
+    plt.scatter(ava_truth_auto, ava_predictions_auto, alpha=1,
+                c=dt_colors_auto, label="low ΔT")
+
+    for i in range(0,len(ava_truth_allo)):
+
+        color=dt_colors_allo[i]
+
+        if color=='tan':
+            if have_tan_label:
+                plt.scatter(ava_truth_allo[i], ava_predictions_allo[i], alpha=0.5,
+                            c=dt_colors_allo[i])
+            else:
+                plt.scatter(ava_truth_allo[i], ava_predictions_allo[i], alpha=0.5,
+                    c=dt_colors_allo[i], label="high ΔT")
+                have_tan_label=True
+
+        if color=='orange':
+            if have_orange_label:
+                plt.scatter(ava_truth_allo[i], ava_predictions_allo[i], alpha=0.5,
+                    c=dt_colors_allo[i])
+            else:
+                plt.scatter(ava_truth_allo[i], ava_predictions_allo[i], alpha=0.5,
+                    c=dt_colors_allo[i], label="medium ΔT")
+                have_orange_label=True
     foo_auto = pd.DataFrame({'truth': ava_truth_auto,
                         'prediction': ava_predictions_auto,
                         'CI': ci_shading_auto})
@@ -259,7 +287,7 @@ def plot_data_and_CI_for_mode_prediction(ava_predictions_allo, ava_truth_allo,
     #sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=['k'],
     #             errorbar=('ci', ci_percent))
     sns.regplot(data=foo_auto, x='truth', y='prediction', color='darkred',ci=ci_percent,marker=None,scatter=False,
-                label="CI at {0}%\n(autos only)".format(ci_percent),
+                label="CI at {0}%\n(low ΔT only)".format(ci_percent),
                 line_kws={"linewidth":1})
     '''
     sns.regplot(data=foo_allo, x='truth', y='prediction', color='darkblue',ci=ci_percent,
@@ -289,10 +317,7 @@ def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_
 
     #colors = [config.low_Ne_low_dT_color if "Auto" in s else config.allo_color for s in sims_names_list]
     dt_colors = [two_d_colors.get_color_from_dT(s) for s in sims_names_list]
-    ne_colors = [two_d_colors.get_color_from_Ne(s) for s in sims_names_list]
-    Ne_alphas = [two_d_colors.get_alpha_from_Ne(s) for s in sims_names_list]
-    dT_alphas = [two_d_colors.get_alpha_from_dT(s) for s in sims_names_list]
-    colors = [two_d_colors.get_color_from_name(s) for s in sims_names_list]
+
     dTs=[two_d_colors.get_dT_from_name(s) for s in sims_names_list]
     print("dts:" + str(dTs))
     dNs=[two_d_colors.get_Ne_from_name(s) for s in sims_names_list]
@@ -301,20 +326,47 @@ def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_
     #alphas = [1 if "Auto" in s else 0.5 for s in sims_names_list]
 
     fig, ax = plt.subplots(1, 1, figsize=(5,5))
-    dT_labeled=False; Ne_labeled=False
+    have_low_dT_label=False; have_tan_label=False; have_orange_label=False
+
+    #TODO, fix labels
 
     for i in range(0,len(ava_truth)):
 
-        #plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.8,
-        #            facecolors='none',edgecolors =ne_colors[i],s=100)
+        color=dt_colors[i]
 
-        if not dT_labeled:
-            plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
-                            c=dt_colors[i], s=100, label="ΔT")
-            dT_labeled = True
-        else:
-            plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
-                            c=dt_colors[i], s=50)
+        #if not have_low_dT_label:
+        #    plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+        #                    c=dt_colors[i], s=100, label="ΔT")
+        #    dT_labeled = True
+        #else:
+        #    plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+        #                    c=dt_colors[i], s=50)
+
+        if color == two_d_colors.two_d_colors.low_dT:
+            if have_low_dT_label:
+                plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+                        c=dt_colors[i])
+            else:
+                plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+                        c=dt_colors[i], label="low ΔT")
+                have_low_dT_label = True
+
+        elif color == 'tan':
+            if have_tan_label:
+                plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+                        c=dt_colors[i])
+            else:
+                plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+                        c=dt_colors[i], label="high ΔT")
+                have_tan_label = True
+        elif color == 'orange':
+            if have_orange_label:
+                plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+                        c=dt_colors[i])
+            else:
+                plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+                        c=dt_colors[i], label="medium ΔT")
+                have_orange_label = True
 
     #for i in range(0,len(ava_truth)):
 

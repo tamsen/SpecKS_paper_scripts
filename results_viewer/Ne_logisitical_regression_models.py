@@ -1,6 +1,5 @@
 import math
 import os
-import random
 import unittest
 import numpy as np
 from sklearn import metrics
@@ -8,70 +7,41 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
 
 import config
-from results_viewer.allo_auto_predictor import read_xs_ys_csv, categorize_sim
+import two_d_colors
+from graveyard.allo_auto_predictor import read_xs_ys_csv, categorize_sim
 
 
 #https://stackoverflow.com/questions/25009284/how-to-plot-roc-curve-in-python
 # https://stackoverflow.com/questions/28716241/controlling-the-threshold-in-logistic-regression-in-scikit-learn
 
-class TestLinearRegression(unittest.TestCase):
+class Ne_TestLogisticalRegression(unittest.TestCase):
+    def test_Ne_regression_on_high_vs_low_N_data(self):
 
-    def test_linear_regression_on_allo_vs_auto_data(self):
-
-        out_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
-
-        #input file
-        file_basename= "allopolyploid_index_truth_vs_predictions.csv"
-
-        # Note, the input file is created by "test_auto_vs_allo_predictor,"
-        # found in "allo_auto_predictor.py"
-        # the auto/allo prediction uses the
-        # wgd and spec predictions from
-        # "genes_remaining_vs_wgd_time.csv" and "mode_vs_spec_time.csv"
-        # which are made by "test_parse_agg_results" in the batch_aggregator.py
-
-        csv_file=os.path.join(out_folder,file_basename)
-        specs, data, target = load_allo_vs_auto_data(csv_file)
-        colors = [config.auto_color if m == 0 else config.allo_color for m in target]
-        linear_regression_threshold_color = 'black'
-        likely_range_for_threshold = np.arange(0.8, 2, 0.001)
-        custom_prob_thresholds =  np.arange(0, 1, 0.01)
-        ROC_plot_base_name = "ROC for inferred allo-vs-auto classification"
-        threshold_plot_title = "Threshold applied to allo-vs-auto index"
-        threshold_plot_labels_by_case={0:"true autopolyploid",1:"true allopolyploid"}
-        case0_color=config.auto_color
-        xlabel = "true separation in time between WGD and SPC"
-        ylabel = "inferred separation in time"
-        make_both_ROC_plots(ROC_plot_base_name, colors, data, likely_range_for_threshold,
-                            custom_prob_thresholds,
-                                 linear_regression_threshold_color, case0_color,
-                                 out_folder, specs, xlabel, ylabel, target,
-                                 threshold_plot_title, threshold_plot_labels_by_case)
-
-    def test_linear_regression_on_high_vs_low_N_data(self):
-
+        #color scheme:
+        #High NE - allo color
+        #Medium NE - light blue
+        #low NE - gray
         out_folder = "/home/tamsen/Data/Specks_outout_from_mesx"
         xlabel = "SPC time"
         ylabel = "ln(metric3)"
-        medium_color=config.color_blind_friendly_color_cycle_analogs['gray']
+        medium_color=two_d_colors.rgb_colors.nice_ltblue
         # Note, the input file is created by "metric3.csv"
         # created by "test_parse_agg_results" in the batch_aggregator.py
 
-        cutoff = 60 #MY (change to 60 or 100 as desired)
+        cutoff = 100 #MY (change to 60 or 100 as desired)
         sims,specs,true_category,data=get_highN_vs_lowN_truth(cutoff)
 
         target1 = [0 if m == "Low" else 1 for m in true_category]
-        colors1 = [config.auto_color if m == 0  else medium_color for m in target1]
+        colors1 = [two_d_colors.rgb_colors.nice_gray if m == 0  else medium_color for m in target1]
         linear_regression_threshold_color1 = medium_color
         likely_range_for_threshold = np.arange(-6, -4, 0.001)
         custom_prob_thresholds = np.arange(0, 1, 0.01)
         ROC_plot_base_name="ROC for low-vs-high&medium Ne classification"
         threshold_plot_title="threshold_on_low_vs_high&medium_N_data"
         threshold_plot_labels_by_case={0:"Low",1:"Medium&High"}
-        case0_color=config.auto_color
+        case0_color=two_d_colors.rgb_colors.nice_gray
         linear_regression_threshold1,clf1=make_both_ROC_plots(ROC_plot_base_name,
                                  colors1, data, likely_range_for_threshold,
                                                               custom_prob_thresholds,
@@ -80,14 +50,14 @@ class TestLinearRegression(unittest.TestCase):
                                  threshold_plot_title, threshold_plot_labels_by_case)
 
         target2 = [1 if m == "High" else 0 for m in true_category]
-        colors2 = [medium_color if m == 0 else config.allo_color for m in target2]
-        linear_regression_threshold_color2 = config.allo_color
+        colors2 = [medium_color if m == 0 else two_d_colors.rgb_colors.nice_high_ne for m in target2]
+        linear_regression_threshold_color2 = two_d_colors.rgb_colors.nice_high_ne
         likely_range_for_threshold = np.arange(-6, -1, 0.01)
         custom_prob_thresholds = np.arange(0, 1, 0.01)
         ROC_plot_base_name = "ROC for low&medium-vs-high Ne classification"
         threshold_plot_title = "threshold_on_low&medium_vs_high_N_data"
         threshold_plot_labels_by_case={0:"Low&Medium",1:"High"}
-        case0_color= config.auto_color
+        case0_color= two_d_colors.rgb_colors.nice_gray
         linear_regression_threshold2,clf2=make_both_ROC_plots(ROC_plot_base_name,
                                  colors2, data, likely_range_for_threshold,
                                                               custom_prob_thresholds,
@@ -96,8 +66,9 @@ class TestLinearRegression(unittest.TestCase):
                                  threshold_plot_title,threshold_plot_labels_by_case)
 
         #plot the two thresholds together
-        threshold_plot_title3 = "Threshold applied to high-vs-low Ne"
-        colors3 = [config.auto_color if m == "High" else medium_color if m == "Medium" else config.allo_color for m in true_category]
+        threshold_plot_title3 = "Low, medium and high Ne classification"
+        colors3 = [two_d_colors.rgb_colors.nice_high_ne  if m == "High" else medium_color if m == "Medium"
+            else two_d_colors.rgb_colors.nice_gray for m in true_category]
         plot_2_thresholds_against_data(colors3, data, linear_regression_threshold1, linear_regression_threshold2,
                                             linear_regression_threshold_color1, linear_regression_threshold_color2,
                                             out_folder, specs, threshold_plot_title3)
@@ -122,7 +93,7 @@ def plot_2_thresholds_against_data(colors3, data, linear_regression_threshold1, 
                                    linear_regression_threshold_color1, linear_regression_threshold_color2,
                                    out_folder, specs, threshold_plot_title3):
     fig, ax = plt.subplots(1, 1, figsize=(4, 4))
-    alpha = 0.2
+    alpha = 0.7
     n=len(specs)
     for i in range(0, len(specs)):
         plt.scatter(specs[i], data[i], marker='o', c=colors3[i], alpha=alpha)
@@ -132,7 +103,7 @@ def plot_2_thresholds_against_data(colors3, data, linear_regression_threshold1, 
     ax.axhline(y=linear_regression_threshold2, color=linear_regression_threshold_color2, linestyle='--',
                label="mvh thresh"
                      + " ({0})".format(round(linear_regression_threshold2, 4)))
-    ax.set(xlabel=" SPC time ")
+    ax.set(xlabel=" DIV time ")
     ax.set(ylabel=" metric ")
     plt.legend(loc=4)
     plt.tight_layout(pad=3)
@@ -238,7 +209,7 @@ def plot_threshold_against_data(colors, data, linear_regression_threshold,
     fig, ax = plt.subplots(1, 1, figsize=(4, 4))
     labeled_0=False
     labeled_1=False
-    alpha=0.2
+    alpha=0.7
     num_data_points=len(specs)
     for i in range(0,num_data_points):
 

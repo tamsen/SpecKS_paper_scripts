@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 import config
 import kp_reader
 import KP_histogramer
+import two_d_colors
 from results_viewer import batch_analyzer, batch_histogrammer, batch_aggregator
 
 
@@ -27,7 +28,8 @@ class Test1KP(unittest.TestCase):
         lookup_file = "1KP-Sample-List.csv"
         sample_lookup = kp_reader.get_sample_code_lookup(lookup_file)
 
-        reanalyze=True
+        #reanalyze=True
+        reanalyze = False
         use_only_curated_data=True
         bin_size=0.001
         right_most_ssd_peak = 0.08
@@ -115,9 +117,9 @@ def read_list_of_curated_WGD_to_use_for_analysis(saved_curated_wgd_name):
 
 def plot_histogram_of_metric3_over1KP(metrics_for_hist, output_folder):
 
-    colors_by_category = {"Low": config.auto_color,
-                          "Medium":config.color_blind_friendly_color_cycle_analogs['gray'],
-                          "High": config.allo_color}
+    colors_by_category = {"Low": two_d_colors.rgb_colors.nice_gray,
+                          "Medium": two_d_colors.rgb_colors.nice_ltblue,
+                          "High": two_d_colors.rgb_colors.nice_high_ne}
 
     fig = plt.figure(figsize=(4, 5), dpi=100)
     n, bins, patches = plt.hist(metrics_for_hist, bins=100, facecolor='b', alpha=1, label='histogram data')
@@ -183,9 +185,10 @@ def analyze_metric_results(input_metrics_file, out_folder):
             return well_behaved_wgd_histograms
 
 def make_violin_plot(out_folder, plot_data, plot_name, plot_to_make):
-    colors_by_category = {"Low": config.auto_color,
-                          "Medium":config.color_blind_friendly_color_cycle_analogs['gray'],
-                          "High": config.allo_color}
+
+    colors_by_category = {"Low": two_d_colors.rgb_colors.nice_gray,
+                          "Medium": two_d_colors.rgb_colors.nice_ltblue,
+                          "High": two_d_colors.rgb_colors.nice_high_ne}
     categories = colors_by_category.keys()
     data = []
     data_labels = []
@@ -223,10 +226,10 @@ def make_violin_plot(out_folder, plot_data, plot_name, plot_to_make):
 
 
 def get_low_to_medium_threshold():
-    return -4.34
+    return -4.20
 
 def get_medium_to_high_threshold():
-    return -3.36
+    return -3.11
 
 def get_log_metric3(run_metrics):
 

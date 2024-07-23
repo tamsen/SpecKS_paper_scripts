@@ -31,7 +31,7 @@ class TimeSeriesHistogrammer(unittest.TestCase):
 
         filter = "Allo"
         colors=two_d_colors.two_d_colors.high_Ne_low_dT
-        plot_title=("High Ne, low  ΔT")
+        plot_title=("High Ne, low ΔT")
         for spec in ['polyploid']:#species:
             get_time_series_histograms_for_runs_in_batch(output_folder, plot_title,
                                                      csvfiles_by_polyploid_by_species_rep_by_algorithm, spec,
@@ -40,7 +40,7 @@ class TimeSeriesHistogrammer(unittest.TestCase):
 
         filter = "Auto"
         colors=two_d_colors.two_d_colors.low_Ne_high_dT
-        plot_title=("Low Ne, high  ΔT")
+        plot_title=("Low Ne, high ΔT")
         for spec in ['polyploid']:#species:
             get_time_series_histograms_for_runs_in_batch(output_folder, plot_title,
                                                      csvfiles_by_polyploid_by_species_rep_by_algorithm, spec,
