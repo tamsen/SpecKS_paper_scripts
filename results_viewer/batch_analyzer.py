@@ -31,7 +31,7 @@ class BatchAnalyser(unittest.TestCase):
         max_Ks=1.0
         params = polyploid_params_by_name[csv_file]
         out_file_name = full_path.replace(".csv", "_Ks_hist_fit" + str(max_Ks) + ".png")
-        fit_results = analyze_histogram(*hist_data, params.WGD_time_MYA, params.SPC_time_MYA,
+        fit_results = analyze_histogram(*hist_data, params.WGD_time_MYA, params.DIV_time_MYA,
                                         kernel_size, False, 'tan', out_file_name)
 
         results_by_file = {"test": fit_results}
@@ -70,7 +70,7 @@ def compute_metrics_for_batch(batch_name,base_output_folder):
         print("starting " + file_path)
         out_file_name = file_path.replace(".csv", "_Ks_hist_fit" + str(max_Ks) + ".png")
 
-        fit_results = analyze_histogram(*hist_data, params.WGD_time_MYA, params.SPC_time_MYA,
+        fit_results = analyze_histogram(*hist_data, params.WGD_time_MYA, params.DIV_time_MYA,
                                         kernel_size, maxY, right_most_ssd_peak, out_file_name)
         results_by_file[file]=fit_results
         print(file_path + " analyzed")

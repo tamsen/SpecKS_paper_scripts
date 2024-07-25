@@ -97,7 +97,7 @@ def get_time_series_histograms_for_runs_in_batch(out_folder, sample_name, csvfil
     metrics_by_result_names= {}
 
     # making subplots
-    spec_times= [params_by_polyploid[name].SPC_time_MYA for name in ordered_results]
+    spec_times= [params_by_polyploid[name].DIV_time_MYA for name in ordered_results]
     num_spec_times=len(spec_times)
     num_modes_of_speciation = 1#auto and allow
 
@@ -158,8 +158,8 @@ def make_time_series_histogram_subplot(this_ax, alpha, Ks_results, bin_size, par
     #                                    params.SPC_time_MYA, params.WGD_time_MYA) )
     trimmed_bins=bins[0:len(n)]
     smoothed_ys = smooth_data(kernel_size, n)
-    this_ax.plot(trimmed_bins,smoothed_ys,color=plot_color,
-                 label='DIV/WGD time: {0}/{1} MYA'.format(params.SPC_time_MYA, params.WGD_time_MYA)                 )
+    this_ax.plot(trimmed_bins, smoothed_ys, color=plot_color,
+                 label='DIV/WGD time: {0}/{1} MYA'.format(params.DIV_time_MYA, params.WGD_time_MYA))
     hist_result=[n, bins]
     hist_maximum=max(n)
     ymax_suggestion=hist_maximum*1.6

@@ -50,10 +50,10 @@ class WGDPredictor(unittest.TestCase):
         for sim_name in sims_names:
 
             polyploid_params=truth_by_sim_name[sim_name]
-            how_auto_t=polyploid_params.SPC_time_MYA - polyploid_params.WGD_time_MYA
-            truth=[polyploid_params.SPC_time_MYA,polyploid_params.WGD_time_MYA,how_auto_t]
+            how_auto_t= polyploid_params.DIV_time_MYA - polyploid_params.WGD_time_MYA
+            truth=[polyploid_params.DIV_time_MYA, polyploid_params.WGD_time_MYA, how_auto_t]
             allo_vs_auto_truth_by_sim[sim_name]=truth
-            print("true spec {0}\ttrue wgd {1}".format(polyploid_params.SPC_time_MYA,polyploid_params.WGD_time_MYA))
+            print("true spec {0}\ttrue wgd {1}".format(polyploid_params.DIV_time_MYA, polyploid_params.WGD_time_MYA))
 
             genes_remaing= genes_remaining_dict[sim_name]
             wgd_prediction=curve_fitting.logfit(genes_remaing, *wgd_popt)
@@ -66,7 +66,7 @@ class WGDPredictor(unittest.TestCase):
             print("predicted spec {0}\tpredicted wgd {1}".format(spec_prediction, wgd_prediction))
             print("\n")
 
-            if (polyploid_params.WGD_time_MYA==polyploid_params.SPC_time_MYA):
+            if (polyploid_params.WGD_time_MYA==polyploid_params.DIV_time_MYA):
                 predicted_indexes_for_true_autos.append(how_auto_predicition)
             else:
                 predicted_indexes_for_true_allos.append(how_auto_predicition)

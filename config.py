@@ -81,7 +81,7 @@ class SpecKS_config:
                             incoming_txt = poly_layer.text.strip()
                             incoming_tag = poly_layer.tag.strip()
                             if (incoming_tag == "SPC_time_MYA"):
-                                new_params.SPC_time_MYA = int(incoming_txt)
+                                new_params.DIV_time_MYA = int(incoming_txt)
                             if (incoming_tag == "WGD_time_MYA"):
                                 new_params.WGD_time_MYA = int(incoming_txt)
                             if (incoming_tag == "name"):
@@ -164,18 +164,18 @@ auto_color=color_blind_friendly_color_cycle_analogs['orange']
 histogram_y_label="# paralog pairs"
 
 class PolyploidParams:
-    SPC_time_MYA = 0
+    DIV_time_MYA = 0
     WGD_time_MYA = 0
     name = False
 
-    def __init__(self, SPC_time_MYA, WGD_time_MYA, name):
-        self.SPC_time_MYA = SPC_time_MYA
+    def __init__(self, DIV_time_MYA, WGD_time_MYA, name):
+        self.DIV_time_MYA = DIV_time_MYA
         self.WGD_time_MYA = WGD_time_MYA
         self.name = name
 
     def to_xml(self):
         s1="\t<name>{0}</name>".format(self.name)
-        s2="\t<SPC_time_MYA>{0}</SPC_time_MYA>".format(self.SPC_time_MYA)
+        s2="\t<DIV_time_MYA>{0}</DIV_time_MYA>".format(self.DIV_time_MYA)
         s3="\t<WGD_time_MYA>{0}</WGD_time_MYA>".format(self.WGD_time_MYA)
         return "\n".join([s1,s2,s3])
 

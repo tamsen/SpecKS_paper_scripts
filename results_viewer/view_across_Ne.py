@@ -28,7 +28,7 @@ class MyTestAcrossNe(unittest.TestCase):
             alg="ML"
             runs=params_by_polyploid.keys()
             for run in runs:
-                if (params_by_polyploid[run].SPC_time_MYA == SPC_filter):
+                if (params_by_polyploid[run].DIV_time_MYA == SPC_filter):
                     if params_by_polyploid[run].WGD_time_MYA == SPC_filter:
                         #its the autopolyploid we want
                         auto_csv_files_by_batch[batch]=[csvfiles_by_polyploid_by_species_rep_by_algorithm[run],

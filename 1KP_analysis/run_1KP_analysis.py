@@ -85,8 +85,8 @@ class Test1KP(unittest.TestCase):
             out_fit_png = os.path.join(output_folder, "fit" + "_plot_" +  sample_name+
                                          "_" + species_code + "_"+ str(max_Ks) + ".png")
 
-            fit_results = KP_histogramer.analyze_histogram(*hist_data3, params.WGD_time_MYA, params.SPC_time_MYA,
-                                            kernel_size, False, right_most_ssd_peak, out_fit_png)
+            fit_results = KP_histogramer.analyze_histogram(*hist_data3, params.WGD_time_MYA, params.DIV_time_MYA,
+                                                           kernel_size, False, right_most_ssd_peak, out_fit_png)
 
             results_by_file[Ks_file]=fit_results
             print(Ks_file + " analyzed")

@@ -3,6 +3,8 @@ import unittest
 import numpy as np
 from matplotlib import pyplot as plt
 import config
+import two_d_colors
+
 
 class BatchHistogrammer(unittest.TestCase):
 
@@ -147,8 +149,8 @@ def get_histograms_for_runs_in_batch(out_folder, sample_name, csvfiles_by_polypl
     metrics_by_result_names= {}
 
     # making subplots
-    spec_times= [params_by_polyploid[auto_name].SPC_time_MYA for auto_name in ordered_auto_results]
-    wgd_offsets= [params_by_polyploid[allo_name].SPC_time_MYA - params_by_polyploid[allo_name].WGD_time_MYA
+    spec_times= [params_by_polyploid[auto_name].DIV_time_MYA for auto_name in ordered_auto_results]
+    wgd_offsets= [params_by_polyploid[allo_name].DIV_time_MYA - params_by_polyploid[allo_name].WGD_time_MYA
                   for allo_name in ordered_allo1_results] + [0]
     num_spec_times=len(spec_times)
 
@@ -187,32 +189,33 @@ def get_histograms_for_runs_in_batch(out_folder, sample_name, csvfiles_by_polypl
             csvs_for_allo_result= csvfiles_by_polyploid_by_rep_by_algorthim[allo_result_name]
             ks_for_allo_result= csvs_for_allo_result[spec][replicate][alg]
             params=params_by_polyploid[allo_result_name]
-            max_Ks = params.SPC_time_MYA*config.SpecKS_config.Ks_per_Myr*1.3#x_max_by_SPC[params.SPC_time_MYA]
-            maxY = y_max_by_SPC[params.SPC_time_MYA]
-            polyploid_index = params.SPC_time_MYA - params.WGD_time_MYA
+            max_Ks = params.DIV_time_MYA * config.SpecKS_config.Ks_per_Myr * 1.3#x_max_by_SPC[params.SPC_time_MYA]
+            maxY = y_max_by_SPC[params.DIV_time_MYA]
+            polyploid_index = params.DIV_time_MYA - params.WGD_time_MYA
             if polyploid_index ==0:
-                plot_color=config.auto_color
-                ax[0, result_idx].set_title("Autopolyploid\nSPC=WGD", fontsize=10)
+                #plot_color=config.auto_color
+                ax[0, result_idx].set_title("TDIV=TWGD", fontsize=10)
             else:
-                plot_color=config.allo_color
-                ax[0, result_idx].set_title("Allopolyploid\nSPC-WGD="+str(polyploid_index), fontsize=10)
+                #plot_color=config.allo_color
+                ax[0, result_idx].set_title("TDIV-TWGD="+str(polyploid_index), fontsize=10)
+            plot_color=two_d_colors.get_color_from_dT(allo_result_name)
             hist_data=make_histogram_subplot(this_ax, spec, ks_for_allo_result,
                                         bin_size, params,
                                         max_Ks, maxY,plot_color)
 
-            ax[sim_idx, result_idx].text(0,maxY*0.8, " SPC="+str(params.SPC_time_MYA))
-            ax[sim_idx, result_idx].text(0,maxY*0.6, " WGD="+str(params.WGD_time_MYA))
+            ax[sim_idx, result_idx].text(0, maxY * 0.8, " TDIV=" + str(params.DIV_time_MYA))
+            ax[sim_idx, result_idx].text(0,maxY*0.6, " TWGD="+str(params.WGD_time_MYA))
             out_file_name = os.path.join(out_folder, allo_result_name + ".hist.csv")
             save_hist_to_csv(hist_data, out_file_name)
 
 
     for i in range(0,num_wgd_times):
         last_row=num_spec_times-1
-        ax[last_row, i].set(xlabel="ΔWGD: " + str(wgd_offsets[i]) + "MYA")
+        ax[last_row, i].set(xlabel="ΔT: " + str(wgd_offsets[i]) + "MYA")
 
     for i in range(0,num_spec_times):
         first_col=0
-        ax[i, first_col].set(ylabel="SPC: \n"+ str(spec_times[i]) + "MYA")
+        ax[i, first_col].set(ylabel="TDIV: \n"+ str(spec_times[i]) + "MYA")
 
     #plt.subplots(layout="constrained")
     plt.rcParams['figure.constrained_layout.use'] = True
@@ -227,7 +230,7 @@ def make_histogram_subplot(this_ax, spec, Ks_results, bin_size, params,
                            max_Ks, maxY, plot_color):
 
     WGD_as_Ks = params.WGD_time_MYA * config.SpecKS_config.Ks_per_Myr #/ 1.04 ..the peak max is about 96% off from where it should be
-    SPEC_as_Ks = params.SPC_time_MYA * config.SpecKS_config.Ks_per_Myr #/ 1.04
+    SPEC_as_Ks = params.DIV_time_MYA * config.SpecKS_config.Ks_per_Myr #/ 1.04
     default_xaxis_limit =SPEC_as_Ks + 0.2
     x = Ks_results
     num_gene_pairs_str=str(len(Ks_results))
@@ -241,7 +244,7 @@ def make_histogram_subplot(this_ax, spec, Ks_results, bin_size, params,
 
     gray=config.color_blind_friendly_color_cycle_analogs['gray']
     this_ax.axvline(x=WGD_as_Ks, color=gray, linestyle='-', label="WGD:" + str(params.WGD_time_MYA))
-    this_ax.axvline(x=SPEC_as_Ks, color=gray, linestyle='--', label="SPC:" + str(params.SPC_time_MYA))
+    this_ax.axvline(x=SPEC_as_Ks, color=gray, linestyle='--', label="SPC:" + str(params.DIV_time_MYA))
 
 
     if maxY:

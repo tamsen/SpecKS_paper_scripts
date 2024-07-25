@@ -50,8 +50,8 @@ def get_time_series_histograms_for_runs_in_batch(out_folder, sample_name, csvfil
     metrics_by_result_names= {}
 
     # making subplots
-    auto_spec_times= [params_by_polyploid[auto_name].SPC_time_MYA for auto_name in ordered_auto_results]
-    allo_spec_times= [params_by_polyploid[allo_name].SPC_time_MYA for allo_name in ordered_allo_results]
+    auto_spec_times= [params_by_polyploid[auto_name].DIV_time_MYA for auto_name in ordered_auto_results]
+    allo_spec_times= [params_by_polyploid[allo_name].DIV_time_MYA for allo_name in ordered_allo_results]
     num_spec_times=max(len(auto_spec_times),len(allo_spec_times))
     num_modes_of_speciation = 2 #auto and allow
 
@@ -119,8 +119,8 @@ def make_time_series_histogram_subplot(this_ax, alpha, Ks_results, bin_size, par
     #                                    params.SPC_time_MYA, params.WGD_time_MYA) )
     trimmed_bins=bins[0:len(n)]
     smoothed_ys = smooth_data(kernel_size, n)
-    this_ax.plot(trimmed_bins,smoothed_ys,color=plot_color,
-                 label='DIV/WGD time: {0}/{1} MYA'.format(params.SPC_time_MYA, params.WGD_time_MYA)                 )
+    this_ax.plot(trimmed_bins, smoothed_ys, color=plot_color,
+                 label='DIV/WGD time: {0}/{1} MYA'.format(params.DIV_time_MYA, params.WGD_time_MYA))
     hist_result=[n, bins]
     hist_maximum=max(n)
     ymax_suggestion=hist_maximum*1.6
