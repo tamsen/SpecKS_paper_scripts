@@ -328,19 +328,9 @@ def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_
     fig, ax = plt.subplots(1, 1, figsize=(5,5))
     have_low_dT_label=False; have_tan_label=False; have_orange_label=False
 
-    #TODO, fix labels
-
     for i in range(0,len(ava_truth)):
 
         color=dt_colors[i]
-
-        #if not have_low_dT_label:
-        #    plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
-        #                    c=dt_colors[i], s=100, label="ΔT")
-        #    dT_labeled = True
-        #else:
-        #    plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
-        #                    c=dt_colors[i], s=50)
 
         if color == two_d_colors.two_d_colors.low_dT:
             if have_low_dT_label:
@@ -378,11 +368,15 @@ def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_
     #        plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
     #            c=ne_colors[i], s=10, marker="X")
 
+    slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(ava_truth,ava_predictions)
+    #r_string=str(round(r[0,1],2))
+    r_string = str(r_value)
+    std_error = str(std_err )
     foo = pd.DataFrame({'truth': ava_truth, 'prediction': ava_predictions, 'CI': ci_shading})
     #sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=['k'],errorbar=('ci', ci_percent) )
     sns.regplot(data=foo, x='truth', y='prediction', color='k',ci=ci_percent,marker=None,scatter=False,
-                label="CI at {0}%\n(all data)".format(ci_percent),
-                line_kws={"linewidth":1})
+                label="CI at {0}%\nr = {1}\nstderr = {2}\n((all data)".format(ci_percent,r_string,std_err),
+                line_kws={"linewidth":1},fit_reg=True)
 
     if test_i == 2:
         ax.set(xlabel="<-- true ΔT -->")
