@@ -224,13 +224,15 @@ def plot_error_vs_metric(error, metric, metric_name,
                         'metric': metric})
 
     sns.regplot(data=foo, x='metric', y='error', color='k',ci=ci_percent,marker=None,scatter=False,
-                label="CI at {0}%\n(all data)".format(ci_percent),
+                #label="CI at {0}%\n(all data)".format(ci_percent),
+                label="line fit, CI at {0}%".format(ci_percent),
                 line_kws={"linewidth":1})
 
     #else:
     ax.set(xlabel=metric_name)
     ax.set(ylabel="prediction error")
     ax.set(ylim=[-10,65])
+    #ax.plot([-0.5,50], [-0.5,50], 'gray', linestyle=":", alpha=0.75, zorder=0, label="y=x")
     plt.legend()
     plot_file = os.path.join(out_folder, tests[test_i] + "_error_vs_" + metric_name +".png")
     plt.savefig(plot_file)
@@ -286,8 +288,9 @@ def plot_data_and_CI_for_mode_prediction(ava_predictions_allo, ava_truth_allo,
 
     #sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=['k'],
     #             errorbar=('ci', ci_percent))
-    sns.regplot(data=foo_auto, x='truth', y='prediction', color='darkred',ci=ci_percent,marker=None,scatter=False,
-                label="CI at {0}%\n(low ΔT only)".format(ci_percent),
+    sns.regplot(data=foo_auto, x='truth', y='prediction', color='green',ci=ci_percent,marker=None,scatter=False,
+                #label="CI at {0}%\n(low ΔT only)".format(ci_percent),
+                label="line fit, CI at {0}%".format(ci_percent),
                 line_kws={"linewidth":1})
     '''
     sns.regplot(data=foo_allo, x='truth', y='prediction', color='darkblue',ci=ci_percent,
@@ -300,6 +303,9 @@ def plot_data_and_CI_for_mode_prediction(ava_predictions_allo, ava_truth_allo,
                 label="CI at {0}%\n(allos only)".format(60),
                 line_kws={"linewidth":1})
     '''
+    plt.yticks(np.arange(0,90, 10))
+    ax.plot([5,80], [5,80], 'black', linestyle="--", alpha=0.75, zorder=0, label="y=x")
+
     ax.set(xlabel="truth (MY)")
     ax.set(ylabel="prediction (MY)")
     plt.legend()
@@ -337,7 +343,7 @@ def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_
                 plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
                         c=dt_colors[i])
             else:
-                plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+                plt.scatter(ava_truth[i], ava_predictions[i], alpha=1,
                         c=dt_colors[i], label="low ΔT")
                 have_low_dT_label = True
 
@@ -346,7 +352,7 @@ def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_
                 plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
                         c=dt_colors[i])
             else:
-                plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+                plt.scatter(ava_truth[i], ava_predictions[i], alpha=1,
                         c=dt_colors[i], label="high ΔT")
                 have_tan_label = True
         elif color == 'orange':
@@ -354,7 +360,7 @@ def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_
                 plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
                         c=dt_colors[i])
             else:
-                plt.scatter(ava_truth[i], ava_predictions[i], alpha=0.5,
+                plt.scatter(ava_truth[i], ava_predictions[i], alpha=1,
                         c=dt_colors[i], label="medium ΔT")
                 have_orange_label = True
 
@@ -374,8 +380,10 @@ def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_
     std_error = str(std_err )
     foo = pd.DataFrame({'truth': ava_truth, 'prediction': ava_predictions, 'CI': ci_shading})
     #sns.lineplot(data=foo, x='truth', y='prediction', hue='CI', palette=['k'],errorbar=('ci', ci_percent) )
-    sns.regplot(data=foo, x='truth', y='prediction', color='k',ci=ci_percent,marker=None,scatter=False,
-                label="CI at {0}%\nr = {1}\nstderr = {2}\n((all data)".format(ci_percent,r_string,std_err),
+    sns.regplot(data=foo, x='truth', y='prediction', color='blue',ci=ci_percent,marker=None,scatter=False,
+                #label="CI at {0}%\nr = {1}\nstderr = {2}\n((all data)".format(ci_percent,r_string,std_err),
+                label="line fit, CI at {0}%".format(ci_percent),
+
                 line_kws={"linewidth":1},fit_reg=True)
 
     if test_i == 2:
@@ -392,6 +400,9 @@ def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_
     else:
         ax.set(xlabel="truth (MY)")
         ax.set(ylabel="prediction (MY)")
+
+    ax.plot([5, 80], [5, 80], 'black', linestyle="--", label="y=x")
+
     plt.legend()
     plot_file = os.path.join(out_folder, tests[test_i] + "_truth_vs_predictions.png")
     plt.savefig(plot_file)
