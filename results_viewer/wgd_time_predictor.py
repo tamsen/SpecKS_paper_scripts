@@ -79,7 +79,8 @@ class WGDPredictor(unittest.TestCase):
         discrim_criteria_midpoint= 0.5 *(highest_predicted_index_for_true_autos + lowest_predicted_index_for_true_allos)
         print("midpoint:\n" + str(discrim_criteria_midpoint))
 
-        tests=["SPEC","WGD","degree of allopolyploidy (true ΔT)"]
+        #tests=["SPEC","WGD","degree of allopolyploidy (true ΔT)"]
+        tests = ["SPEC", "WGD", "true ΔT (MY), ~ degree of allopolyploidy"]
 
         # convert the list of key-value pairs to a dictionary
         errors_by_test = {test: [] for test in tests}
@@ -105,7 +106,9 @@ class WGDPredictor(unittest.TestCase):
             plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_data_points, out_folder,
                              sims_names_list, test_i, tests)
 
-            metric_name = "degree of allopolyploidy (true ΔT)" #allopolyploid_index"
+            #metric_name = "degree of allopolyploidy (true ΔT)" #allopolyploid_index"
+            metric_name = "true ΔT (MY), ~ degree of allopolyploidy"
+
             metric = [allo_vs_auto_truth_by_sim[s][2] for s in sims_names_list]
             plot_error_vs_metric(errors_for_test, metric, metric_name,
                                  sims_names_list, test_i, tests, out_folder)
@@ -125,7 +128,9 @@ class WGDPredictor(unittest.TestCase):
                                  out_folder, sims_names_list, 0, tests)
 
         metric = [allo_vs_auto_truth_by_sim[s][2] for s in sims_names_list]
-        plot_error_vs_metric(errors, metric, "degree of allopolyploidy (true ΔT)",
+        # metric_name = "degree of allopolyploidy (true ΔT)" #allopolyploid_index"
+        metric_name = "true ΔT (MY), ~ degree of allopolyploidy"
+        plot_error_vs_metric(errors, metric, metric_name,
                              sims_names_list, 0, tests, out_folder)
 
     def test_highN_vs_lowN_predictor(self):

@@ -135,8 +135,8 @@ def get_time_series_histograms_for_runs_in_batch(out_folder, sample_name, csvfil
             out_file_name = os.path.join(out_folder, allo_result_name + ".hist.csv")
             save_hist_to_csv(hist_data, out_file_name)
 
-
-            ax.set(xlabel="~MYA (Ks*{0})".format(config.SpecKS_config.Ks_per_Myr))
+            #TODO
+            ax.set(xlabel="~MYA ({0}*Ks)".format(1.0/config.SpecKS_config.Ks_per_Myr))
 
     ax.set(ylabel=config.histogram_y_label)
     plt.tight_layout()
