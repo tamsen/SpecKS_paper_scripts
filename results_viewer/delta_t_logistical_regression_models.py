@@ -103,7 +103,7 @@ def make_basic_ROC_plot(file_basename, clf, out_folder,
     ax.set(title=title)
     plt.tight_layout()
     plot_file = os.path.join(out_folder, title.replace(" ", "_") + ".png")
-    plt.savefig(plot_file)
+    plt.savefig(plot_file, dpi=350)
     plt.close()
 
 def do_LG_and_ROC_plots(ROC_plot_base_name, colors, observed_data, likely_range_for_threshold,
@@ -172,7 +172,7 @@ def plot_threshold_against_data(colors, data, linear_regression_threshold,
     plt.legend()
     ax.set(title=plot_title + "\nn="+str(num_data_points))
     plot_file = os.path.join(out_folder, plot_title + ".png")
-    plt.savefig(plot_file)
+    plt.savefig(plot_file, dpi=350)
     plt.close()
 
 
@@ -224,7 +224,7 @@ def plot_2_thresholds_against_data(colors3, data, linear_regression_threshold1, 
     plt.tight_layout(pad=3)
     ax.set(title=threshold_plot_title3 + "\nn={}".format(n))
     plot_file = os.path.join(out_folder, threshold_plot_title3 + ".png")
-    plt.savefig(plot_file)
+    plt.savefig(plot_file, dpi=350)
     plt.close()
 
 if __name__ == '__main__':

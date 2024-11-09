@@ -6,6 +6,8 @@ import batch_histogrammer,time_series_histogrammer
 import config
 
 class MyTestAcrossNe(unittest.TestCase):
+
+    #fig 6
     def test_across_ne(self):
 
         batch_names = ["sim37_N0p1","sim37_N1","sim37_N5","sim36_N10","sim37_N20"]
@@ -86,7 +88,7 @@ def get_Ne_series_histograms_for_runs_in_batch(out_folder, sample_name,
     plt.tight_layout()
     out_file_name=os.path.join(out_folder, "histogram_across_ne" + "_plot_" + spec +
                                "_" + replicate + "_" + str(max_Ks_for_x_axis) + ".png")
-    plt.savefig(out_file_name)
+    plt.savefig(out_file_name, dpi=350)
     plt.close()
     return
 

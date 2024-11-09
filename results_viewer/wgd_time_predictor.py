@@ -201,7 +201,7 @@ class WGDPredictor(unittest.TestCase):
         ax.set(yscale='log')
         plt.legend()
         plot_file = os.path.join(out_folder, "highN_vs_lowN_predictor.png")
-        plt.savefig(plot_file)
+        plt.savefig(plot_file, dpi=350)
         plt.close()
 
         plot_confusion(accuracy_by_sim, colors_by_category, high_n_mean, low_n_mean, low_vs_medium_discrimination,
@@ -240,7 +240,7 @@ def plot_error_vs_metric(error, metric, metric_name,
     #ax.plot([-0.5,50], [-0.5,50], 'gray', linestyle=":", alpha=0.75, zorder=0, label="y=x")
     plt.legend()
     plot_file = os.path.join(out_folder, tests[test_i] + "_error_vs_" + metric_name +".png")
-    plt.savefig(plot_file)
+    plt.savefig(plot_file, dpi=350)
     plt.close()
     return plot_file
 
@@ -315,7 +315,7 @@ def plot_data_and_CI_for_mode_prediction(ava_predictions_allo, ava_truth_allo,
     ax.set(ylabel="prediction (MY)")
     plt.legend()
     plot_file = os.path.join(out_folder, tests[test_i] + "_truth_vs_predictions.png")
-    plt.savefig(plot_file)
+    plt.savefig(plot_file, dpi=350)
     plt.close()
     return plot_file
 
@@ -410,7 +410,7 @@ def plot_data_and_CI(ava_predictions, ava_truth, discrim_criteria_midpoint, num_
 
     plt.legend()
     plot_file = os.path.join(out_folder, tests[test_i] + "_truth_vs_predictions.png")
-    plt.savefig(plot_file)
+    plt.savefig(plot_file, dpi=350)
     plt.close()
     return plot_file
 
@@ -454,7 +454,7 @@ def plot_confusion(accuracy_by_sim, colors_by_category, high_n_mean, low_n_mean,
     ax.set(yscale='log')
     plt.legend()
     plot_file = os.path.join(out_folder, "highN_vs_lowN_accuracy.png")
-    plt.savefig(plot_file)
+    plt.savefig(plot_file, dpi=350)
     plt.close()
 
 
@@ -474,7 +474,7 @@ def make_box_plots(colors_by_category, metrics_by_category, out_folder):
     for patch, label in zip(bplot['boxes'], labels):
         patch.set_facecolor(colors_by_category[label])
     plot_file = os.path.join(out_folder, "highN_vs_lowN_boxplots.png")
-    plt.savefig(plot_file)
+    plt.savefig(plot_file, dpi=350)
     plt.close()
 
 

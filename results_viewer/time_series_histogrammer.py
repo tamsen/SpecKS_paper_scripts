@@ -9,6 +9,7 @@ from results_viewer.batch_analyzer import smooth_data
 
 class TimeSeriesHistogrammer(unittest.TestCase):
 
+    #fig 5
     def test_make_time_series_histograms_for_off_diagonals(self):
 
         batch_name="sim53_offdiags" #
@@ -135,14 +136,13 @@ def get_time_series_histograms_for_runs_in_batch(out_folder, sample_name, csvfil
             out_file_name = os.path.join(out_folder, allo_result_name + ".hist.csv")
             save_hist_to_csv(hist_data, out_file_name)
 
-            #TODO
             ax.set(xlabel="~MYA ({0}*Ks)".format(1.0/config.SpecKS_config.Ks_per_Myr))
 
     ax.set(ylabel=config.histogram_y_label)
     plt.tight_layout()
     out_file_name=os.path.join(out_folder, "histogram" + "_plot_" + spec +
                                "_" + filter + "_" + str(max_Ks_for_x_axis) + ".png")
-    plt.savefig(out_file_name)
+    plt.savefig(out_file_name, dpi=350)
     plt.close()
     return metrics_by_result_names
 

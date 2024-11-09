@@ -140,7 +140,7 @@ def plot_histogram_of_metric3_over1KP(metrics_for_hist, output_folder):
     plt.ylabel("# species")
     plt.xlabel("high-vs-low Ne discrimination metric value")
     plt.title("Histogram of classification of species from the 1KP dataset")
-    plt.savefig(os.path.join(output_folder, "metric3_hist.png"))
+    plt.savefig(os.path.join(output_folder, "metric3_hist.png"), dpi=350)
     plt.clf()
     plt.close()
 def save_list_of_well_behaved_WGD(curated_wgd_name, well_behaved_wgd_histograms):
@@ -221,7 +221,7 @@ def make_violin_plot(out_folder, plot_data, plot_name, plot_to_make):
     ax.set_xticklabels(data_labels)
     #plt.legend()
     violin_plot_file_path = os.path.join(out_folder, plot_name)
-    plt.savefig(violin_plot_file_path)
+    plt.savefig(violin_plot_file_path, dpi=350)
     plt.close()
 
 

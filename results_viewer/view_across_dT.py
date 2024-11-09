@@ -7,6 +7,7 @@ import config
 
 class MyTestAcrossdT(unittest.TestCase):
 
+    #Fig 6
     def test_across_dT(self):
 
         batch = "sim60_deltat"
@@ -81,7 +82,7 @@ def get_dT_series_histograms_for_runs_in_batch(out_folder, sample_name,
     plt.tight_layout()
     out_file_name=os.path.join(out_folder, "histogram_across_dT" + "_plot_" + spec +
                                "_" + replicate + "_" + str(max_Ks_for_x_axis) + ".png")
-    plt.savefig(out_file_name)
+    plt.savefig(out_file_name, dpi=350)
     plt.close()
     print("saved " + out_file_name)
     return

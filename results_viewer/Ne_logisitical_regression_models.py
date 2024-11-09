@@ -109,7 +109,7 @@ def plot_2_thresholds_against_data(colors3, data, linear_regression_threshold1, 
     plt.tight_layout(pad=3)
     ax.set(title=threshold_plot_title3 + "\nn={}".format(n))
     plot_file = os.path.join(out_folder, threshold_plot_title3 + ".png")
-    plt.savefig(plot_file)
+    plt.savefig(plot_file, dpi=350)
     plt.close()
 
 
@@ -141,7 +141,7 @@ def make_custom_ROC_plot(X_test, clf, custom_prob_thresholds,
     plt.legend(loc=4)
     ax.set(title=title)
     plot_file = os.path.join(out_folder, title.replace(" ", "_") + ".png")
-    plt.savefig(plot_file)
+    plt.savefig(plot_file, dpi=350)
     plt.close()
     return thresholds_t
 
@@ -163,7 +163,7 @@ def make_basic_ROC_plot(file_basename, clf, out_folder,
     ax.set(title=title)
     plt.tight_layout()
     plot_file = os.path.join(out_folder, title.replace(" ", "_") + ".png")
-    plt.savefig(plot_file)
+    plt.savefig(plot_file, dpi=350)
     plt.close()
 
 def make_both_ROC_plots(ROC_plot_base_name, colors, data, likely_range_for_threshold,
@@ -200,6 +200,7 @@ def get_linear_regession_metric_threshold(clf, likely_range_for_threshold):
     i_of_threshold = [i for i in range(0, len(model_prediction_change)) if model_prediction_change[i] == 1]
     linear_regression_threshold = 0.5 * (
                 likely_range_for_threshold[i_of_threshold[0]] + likely_range_for_threshold[i_of_threshold[0] + 1])
+    #linear_regression_threshold=likely_range_for_threshold[i_of_threshold[0]+1]
     return linear_regression_threshold
 
 def plot_threshold_against_data(colors, data, linear_regression_threshold,
@@ -234,7 +235,7 @@ def plot_threshold_against_data(colors, data, linear_regression_threshold,
     plt.legend()
     ax.set(title=plot_title + "\nn="+str(num_data_points))
     plot_file = os.path.join(out_folder, plot_title + ".png")
-    plt.savefig(plot_file)
+    plt.savefig(plot_file, dpi=350)
     plt.close()
 
 

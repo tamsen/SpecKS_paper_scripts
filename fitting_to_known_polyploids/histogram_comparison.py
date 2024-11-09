@@ -10,9 +10,10 @@ from results_viewer import batch_histogrammer, curve_fitting
 
 class MyTestCase(unittest.TestCase):
 
+    MBE_dpi=350
     def test_coffee_histogram(self):
 
-        coffee_num=25#coffee_num=17
+        coffee_num=20#coffee_num=17
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim42_coffee/Allo_Coffea{0}".format(coffee_num)
@@ -38,7 +39,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_poplar_histogram(self):
 
-        pop_num=22
+        pop_num=23
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder = "/home/tamsen/Data/Specks_outout_from_mesx/sim42_Poplar/Allo_Poplar{0}".format(pop_num)
@@ -62,7 +63,7 @@ class MyTestCase(unittest.TestCase):
                              species_run_name, species_for_plot_title, specks_full_path)
     def test_maize_histogram(self):
 
-        maize_num="34"
+        maize_num="32"
         ksrates_out_folder = "/home/tamsen/Data/SpecKS_input/ks_data"
 
         specks_out_folder="/home/tamsen/Data/Specks_outout_from_mesx/sim42_Maize/Allo{0}_Maize".format(maize_num)
@@ -129,7 +130,7 @@ def hist_by_type_of_paralog(bin_size, color, density, max_Ks, species_run_name, 
                             specks_out_folder, wgd_ks):
     ks_by_paralog_type = ks_parsers.read_Ks_csv_by_dup_type(specks_full_path)
     out_png4 = os.path.join(specks_out_folder, "specks_" + species_run_name + "_layered.png")
-    fig = plt.figure(figsize=(10, 10), dpi=100)
+    fig = plt.figure(figsize=(10, 10), dpi=MyTestCase.MBE_dpi)
     [n_WGD, bins] = make_simple_histogram(ks_by_paralog_type['WGD'], species_run_name, bin_size,
                                           color, wgd_ks,
                                           max_Ks, density, out_png4)
@@ -142,7 +143,7 @@ def hist_by_type_of_paralog(bin_size, color, density, max_Ks, species_run_name, 
     n_SSD_SSD, bins, patches = plt.hist(ks_by_paralog_type['SSD-SSD'], bins=bins,
                                         facecolor='yellow', alpha=0.5,
                                         label="SSD-SSD")
-    # fig = plt.figure(figsize=(10, 10), dpi=100)
+
     plt.legend()
     plt.xlabel("Ks")
     plt.ylabel("Count in Bin")
@@ -180,7 +181,9 @@ def make_both_histograms(bin_size, color, hist_comparison_out_folder, WGD_ks, ma
 
 def make_simple_histogram(Ks_results, species_name, bin_size, color,WGD_ks, max_Ks, density, out_png):
 
-    fig = plt.figure(figsize=(10, 10), dpi=100)
+    # MBE says: 600 - 1200 dpi for line drawings
+    # and 350 dpi for color and half-tone artwork)
+    fig = plt.figure(figsize=(10, 10), dpi=MyTestCase.MBE_dpi)
     x = Ks_results
     # print(PAML_hist_out_file)
     label="hist for " + os.path.basename(out_png).replace("_out.png","")
@@ -211,7 +214,7 @@ def overlay_histogram(species_name, species_for_plot_title, list_of_hist_data, W
     colors = ['blue','green']
     labels = ['SpecKS','truth']
 
-    fig = plt.figure()
+    fig = plt.figure(dpi=MyTestCase.MBE_dpi)
     ax1 = plt.subplot2grid((4, 1), (0, 0), rowspan=3)
     ax2 = plt.subplot2grid((4, 1), (3, 0), rowspan=1)
 
