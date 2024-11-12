@@ -13,6 +13,7 @@ import config, two_d_colors
 #https://stackoverflow.com/questions/25009284/how-to-plot-roc-curve-in-python
 # https://stackoverflow.com/questions/28716241/controlling-the-threshold-in-logistic-regression-in-scikit-learn
 
+# to make fig 9
 class DeltaT_TestLinearRegression(unittest.TestCase):
 
     def test_delta_t_regression(self):
@@ -34,7 +35,7 @@ class DeltaT_TestLinearRegression(unittest.TestCase):
         linear_regression_threshold_color = 'black'
         likely_range_for_threshold = np.arange(0.8, 2, 0.001)
         custom_prob_thresholds =  np.arange(0, 1, 0.01)
-        ROC_plot_base_name = "ROC for low vs medium & high ΔT classification"
+        ROC_plot_base_name = "ROC for LvMH ΔT"
         threshold_plot_title = "Lower Threshold applied to ΔT estimation"
         threshold_plot_labels_by_case={0:"true low ΔT",1:"true high&medium ΔT"}
         case0_color=config.auto_color
@@ -55,7 +56,7 @@ class DeltaT_TestLinearRegression(unittest.TestCase):
         linear_regression_threshold_color = 'black'
         likely_range_for_threshold = np.arange(30, 40, 0.001)
         custom_prob_thresholds = np.arange(0, 1, 0.01)
-        ROC_plot_base_name = "ROC for low & medium vs high ΔT classification"
+        ROC_plot_base_name = "ROC for LMvH ΔT"
         threshold_plot_title = "Medium Threshold applied to ΔT estimation"
         threshold_plot_labels_by_case = {0: "true medium ΔT", 1: "true high&medium ΔT"}
         case0_color = config.auto_color
@@ -85,7 +86,7 @@ class DeltaT_TestLinearRegression(unittest.TestCase):
                                             out_folder, truth2, threshold_plot_title3)
 
 
-def make_basic_ROC_plot(file_basename, clf, out_folder,
+def make_basic_ROC_plot(file_basename, title, clf, out_folder,
                         X_test, y_test, accuracy_string):
 
     y_pred_proba = clf.predict_proba(X_test)[::, 1]
@@ -93,16 +94,16 @@ def make_basic_ROC_plot(file_basename, clf, out_folder,
     auc = metrics.roc_auc_score(y_test, y_pred_proba)
     auc_string=str(round(auc, 4))
     print("thresholds:\t" + str(thresholds))
-    title = file_basename.replace(".csv", " ROC plot")
-    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    plt.plot(fpr, tpr, label="auc={0},accuracy={1}".format(auc_string,accuracy_string),
+    title = title.replace(".csv", " ROC plot")
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3))
+    plt.plot(fpr, tpr, label="auc={0},\naccuracy={1}".format(auc_string,accuracy_string),
              color='k', marker='o')
     ax.set(xlabel="false positive rate")
     ax.set(ylabel="true positive rate")
     plt.legend(loc=4)
     ax.set(title=title)
     plt.tight_layout()
-    plot_file = os.path.join(out_folder, title.replace(" ", "_") + ".png")
+    plot_file = os.path.join(out_folder, file_basename.replace(" ", "_") + ".png")
     plt.savefig(plot_file, dpi=350)
     plt.close()
 
@@ -119,8 +120,15 @@ def do_LG_and_ROC_plots(ROC_plot_base_name, colors, observed_data, likely_range_
     y_pred = clf.predict(X_test)
     accuracy = metrics.accuracy_score(y_test, y_pred)
     accuracy_string = str(round(accuracy, 4))
-    make_basic_ROC_plot(ROC_plot_base_name, clf, out_folder, X_test, y_test, accuracy_string)
+    make_basic_ROC_plot(ROC_plot_base_name + "_test_data", ROC_plot_base_name,
+                        clf, out_folder, X_test, y_test, accuracy_string)
 
+    # full data accuracy
+    full_y_pred = clf.predict(data_as_array)
+    full_accuracy = metrics.accuracy_score(target_as_array, full_y_pred)
+    full_accuracy_string = str(round(full_accuracy, 4))
+    make_basic_ROC_plot(ROC_plot_base_name + "_full_data", ROC_plot_base_name,
+                        clf, out_folder, data_as_array, target_as_array, full_accuracy_string)
 
     linear_regression_threshold = get_linear_regession_metric_threshold(clf, likely_range_for_threshold)
     plot_threshold_against_data(colors, observed_data, linear_regression_threshold,

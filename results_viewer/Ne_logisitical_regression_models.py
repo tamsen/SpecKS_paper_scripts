@@ -13,6 +13,7 @@ import two_d_colors
 #https://stackoverflow.com/questions/25009284/how-to-plot-roc-curve-in-python
 # https://stackoverflow.com/questions/28716241/controlling-the-threshold-in-logistic-regression-in-scikit-learn
 
+# to make fig 10
 class Ne_TestLogisticalRegression(unittest.TestCase):
     def test_Ne_regression_on_high_vs_low_N_data(self):
 
