@@ -7,10 +7,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-
-import config
 import two_d_colors
-from graveyard.allo_auto_predictor import read_xs_ys_csv, categorize_sim
 
 
 #https://stackoverflow.com/questions/25009284/how-to-plot-roc-curve-in-python
@@ -38,7 +35,7 @@ class Ne_TestLogisticalRegression(unittest.TestCase):
         linear_regression_threshold_color1 = medium_color
         likely_range_for_threshold = np.arange(-6, -4, 0.001)
         custom_prob_thresholds = np.arange(0, 1, 0.01)
-        ROC_plot_base_name="ROC for low-vs-high&medium Ne classification"
+        ROC_plot_base_name="ROC for LvHM Ne"
         threshold_plot_title="threshold_on_low_vs_high&medium_N_data"
         threshold_plot_labels_by_case={0:"Low",1:"Medium&High"}
         case0_color=two_d_colors.rgb_colors.nice_gray
@@ -49,12 +46,13 @@ class Ne_TestLogisticalRegression(unittest.TestCase):
                                  out_folder, specs, xlabel,ylabel,target1,
                                  threshold_plot_title, threshold_plot_labels_by_case)
 
+
         target2 = [1 if m == "High" else 0 for m in true_category]
         colors2 = [medium_color if m == 0 else two_d_colors.rgb_colors.nice_high_ne for m in target2]
         linear_regression_threshold_color2 = two_d_colors.rgb_colors.nice_high_ne
         likely_range_for_threshold = np.arange(-6, -1, 0.01)
         custom_prob_thresholds = np.arange(0, 1, 0.01)
-        ROC_plot_base_name = "ROC for low&medium-vs-high Ne classification"
+        ROC_plot_base_name = "ROC for LMvH Ne"
         threshold_plot_title = "threshold_on_low&medium_vs_high_N_data"
         threshold_plot_labels_by_case={0:"Low&Medium",1:"High"}
         case0_color= two_d_colors.rgb_colors.nice_gray
@@ -145,7 +143,7 @@ def make_custom_ROC_plot(X_test, clf, custom_prob_thresholds,
     plt.close()
     return thresholds_t
 
-def make_basic_ROC_plot(file_basename, clf, out_folder,
+def make_basic_ROC_plot(file_basename, title, clf, out_folder,
                         X_test, y_test, accuracy_string):
 
     y_pred_proba = clf.predict_proba(X_test)[::, 1]
@@ -153,16 +151,16 @@ def make_basic_ROC_plot(file_basename, clf, out_folder,
     auc = metrics.roc_auc_score(y_test, y_pred_proba)
     auc_string=str(round(auc, 4))
     print("thresholds:\t" + str(thresholds))
-    title = file_basename.replace(".csv", " ROC plot")
-    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    plt.plot(fpr, tpr, label="auc={0},accuracy={1}".format(auc_string,accuracy_string),
+    title =  title.replace(".csv", " ROC plot")
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3))
+    plt.plot(fpr, tpr, label="auc={0},\naccuracy={1}".format(auc_string,accuracy_string),
              color='k', marker='o')
     ax.set(xlabel="false positive rate")
     ax.set(ylabel="true positive rate")
     plt.legend(loc=4)
     ax.set(title=title)
     plt.tight_layout()
-    plot_file = os.path.join(out_folder, title.replace(" ", "_") + ".png")
+    plot_file = os.path.join(out_folder, file_basename.replace(" ", "_") + ".png")
     plt.savefig(plot_file, dpi=350)
     plt.close()
 
@@ -176,10 +174,21 @@ def make_both_ROC_plots(ROC_plot_base_name, colors, data, likely_range_for_thres
                                                         random_state=44)
     clf = LogisticRegression(penalty='l2', C=0.1)
     clf.fit(X_train, y_train)
+
+    #test data accuracy
     y_pred = clf.predict(X_test)
     accuracy = metrics.accuracy_score(y_test, y_pred)
     accuracy_string = str(round(accuracy, 4))
-    make_basic_ROC_plot(ROC_plot_base_name, clf, out_folder, X_test, y_test, accuracy_string)
+    make_basic_ROC_plot(ROC_plot_base_name+"_test_data",ROC_plot_base_name,
+                        clf, out_folder, X_test, y_test, accuracy_string)
+
+    # full data accuracy
+    full_y_pred = clf.predict(data_as_array)
+    full_accuracy = metrics.accuracy_score(target_as_array, full_y_pred)
+    full_accuracy_string = str(round(full_accuracy, 4))
+    make_basic_ROC_plot(ROC_plot_base_name+"_full_data",ROC_plot_base_name,
+                        clf, out_folder, data_as_array, target_as_array, full_accuracy_string)
+
     #thresholds= make_custom_ROC_plot(X_test, clf, custom_prob_thresholds,
     #                          ROC_plot_base_name, out_folder, y_test, accuracy_string)
     #print("Custom thresholds applied: "+ str(thresholds))
@@ -196,7 +205,7 @@ def make_both_ROC_plots(ROC_plot_base_name, colors, data, likely_range_for_thres
 def get_linear_regession_metric_threshold(clf, likely_range_for_threshold):
     model_predictions = clf.predict(np.array([likely_range_for_threshold]).transpose())
     model_prediction_change = [model_predictions[i + 1] - model_predictions[i] for i in
-                               range(0, len(likely_range_for_threshold) - 1)]
+                               range(0, len(likely_range_for_threshold)-1)]
     i_of_threshold = [i for i in range(0, len(model_prediction_change)) if model_prediction_change[i] == 1]
     linear_regression_threshold = 0.5 * (
                 likely_range_for_threshold[i_of_threshold[0]] + likely_range_for_threshold[i_of_threshold[0] + 1])
@@ -306,6 +315,45 @@ def load_allo_vs_auto_data(csv_file):
     print("Data:\t" + str(data))
     return specs,data, target
 
+
+
+def categorize_sim(low_N_sims, med_N_sims, high_N_sims, sim):
+    for n in low_N_sims:
+        if n in sim:
+            return "Low"
+    for n in med_N_sims:
+        if n in sim:
+            return "Medium"
+    for n in high_N_sims:
+        if n in sim:
+            return "High"
+    else:
+        return False
+
+
+def read_xs_ys_csv(csv_file):
+
+    batches=[]
+    sim_names=[]
+    xs=[]
+    ys=[]
+    with open(csv_file, "r") as f:
+
+        while True:
+            line = f.readline()
+            if "batch" in line:
+                continue
+            if len(line)==0:
+                break
+            if "NA" in line:
+                continue
+            data = line.strip().split(",")
+            #batches.append(data[0])
+            sim_names.append(data[1]+ "_" + data[0])
+            xs.append(float(data[2]))
+            ys.append(float(data[3]))
+
+    return xs,ys,sim_names
 
 if __name__ == '__main__':
     unittest.main()
